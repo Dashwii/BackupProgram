@@ -1,0 +1,105 @@
+﻿<UserControl x:Class="BackupProgram.Views.MainPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BackupProgram.Views"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             FontSize="16">
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="listBoxItemCommand">
+            <Button Command="{Binding ChangeSelectedLink}" />
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="4*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <StackPanel VerticalAlignment="Center" Grid.Column="0" Grid.Row="0">
+                <Button Margin="20" Content="Copy" Padding="10"
+					HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Command="{Binding Copy}" />
+                <Button Margin="20" Content="Save" Padding="10"
+					HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Command="{Binding Save}" />
+            </StackPanel>
+
+            <Grid Grid.Column="1" Grid.Row="0" Margin="10 20 20 10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <ListBox Name="sourceListBox" Grid.Column="0" Grid.Row="0" Margin="0 0 5 0" ItemsSource="{Binding SourceLinks}" HorizontalContentAlignment="Stretch">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding ChangeSelectedLink}" CommandParameter="{Binding ElementName=sourceListBox, Path=SelectedIndex}"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <i:InvokeCommandAction Command="{Binding ShowAddLinkDialog}" CommandParameter="{Binding ElementName=sourceListBox, Path=SelectedIndex}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"  />
+                                    <ColumnDefinition Width="auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding Name}" />
+                                <Image Grid.Column="1" Margin="3" Width="20" Height="20" Source="{Binding ImagePath}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal">
+                    <Button Name="SourceButtonAdd" FontSize="14" Content="+" Width="30" HorizontalContentAlignment="Center"
+                            Command="{Binding ShowAddLinkDialog}"/>
+                    <Button Name="SourceButtonDelete" FontSize="14" Content="-" Width="30" HorizontalContentAlignment="Center" 
+                            Command="{Binding RemoveSourceLink}" CommandParameter="{Binding ElementName=sourceListBox, Path=SelectedIndex}"/>
+                </StackPanel>
+
+                <ListBox Name="destListBox" Grid.Column="1" Grid.Row="0" Margin="5 0 0 0" ItemsSource="{Binding CurrentViewedLink.DestLinks}" HorizontalContentAlignment="Stretch">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <i:InvokeCommandAction Command="{Binding ShowAddDestLinkDialog}" CommandParameter="{Binding ElementName=destListBox, Path=SelectedIndex}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"  />
+                                    <ColumnDefinition Width="auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding Name}" />
+                                <Image Grid.Column="1" Margin="3" Width="20" Height="20" Source="{Binding ImagePath}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" Margin="5 0 0 0">
+                    <Button Name="DestButtonAdd" FontSize="14" Content="+" Width="30" HorizontalContentAlignment="Center"
+                            Command="{Binding ShowAddDestLinkDialog}"/>
+                    <Button Name="DestButtonDelete" FontSize="14" Content="-" Width="30" HorizontalContentAlignment="Center"
+                            Command="{Binding RemoveDestLink}" CommandParameter="{Binding ElementName=destListBox, Path=SelectedIndex}"/>
+                </StackPanel>
+            </Grid>
+            <Border Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Margin="20 0 20 10" BorderBrush="Gray" BorderThickness="2">
+                <TextBlock Background="LightGRay" />
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

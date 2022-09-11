@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="BackupProgram.Views.AddLink"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BackupProgram.Views"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="200"
+             FontSize="18">
+    <UserControl.Resources>
+        <Style x:Key="Button1" TargetType="{x:Type Button}">
+            <Setter Property="FontSize" Value="26" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="Margin" Value="10 0 0 0" />
+        </Style>
+        <Style x:Key="TextBlock1"  TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="Margin" Value="10" />
+        </Style>
+        <Style x:Key="ListViewColumnHeader" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Padding" Value="5" />
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.8*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Margin="0 0 10 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Source Properties" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Style="{StaticResource TextBlock1}" 
+                       Foreground="#4d4c49" FontSize="40" FontWeight="DemiBold" />
+            
+            <TextBlock Text="Path:" Grid.Column="0" Grid.Row="1" Style="{StaticResource TextBlock1}" />
+            <TextBox Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Padding="5" Text="{Binding FilePath}" />
+            <TextBlock Text="Is On:" Grid.Column="0" Grid.Row="2" Style="{StaticResource TextBlock1}" />
+            <CheckBox Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" IsChecked="{Binding IsEnabled}" />
+            <TextBlock Text="Auto Copy Enabled:" Grid.Column="0" Grid.Row="3" Style="{StaticResource TextBlock1}" />
+            <CheckBox Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" IsChecked="{Binding AutoCopyEnabled}"/>
+            <TextBlock Text="Auto Delete Enabled:" Grid.Column="0" Grid.Row="4" Style="{StaticResource TextBlock1}" />
+            <CheckBox Grid.Column="1" VerticalAlignment="Center" Grid.Row="4" IsChecked="{Binding AutoDeleteEnabled}"/>
+
+        </Grid>
+
+        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 10 0">
+            <Button Content="Cancel" Style="{StaticResource Button1}"/>
+            <Button Content="Add Destination" Style="{StaticResource Button1}" Command="{Binding AddDestLink}"/>
+            <Button Content="Done" Style="{StaticResource Button1}" Click="doneButton_Click"/>
+       
+        </StackPanel>
+
+        <ListView Name="destLinkList" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" ItemsSource="{Binding DestLinks}" FontSize="18" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding AddDestLink}" CommandParameter="{Binding ElementName=destLinkList, Path=SelectedIndex}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <ListView.Resources>
+                <Style TargetType="GridViewColumnHeader">
+                    <Setter Property="Padding" Value="5" />
+                    <Setter Property="IsHitTestVisible" Value="False" />
+                </Style>
+            </ListView.Resources>
+            <ListView.View>
+                <GridView AllowsColumnReorder="False" ColumnHeaderToolTip="Destinations Links">
+                    <!--Todo: Add tooltip for filepath in listview to show full path. -->
+                    <GridViewColumn Header="Path" Width="400" DisplayMemberBinding="{Binding FilePath}" />
+                    <GridViewColumn Header="Is Enabled" Width="auto" DisplayMemberBinding="{Binding IsEnabled}" />
+                    <GridViewColumn Header="Cloud" Width="auto" DisplayMemberBinding="{Binding CloudDest}" />
+                    <GridViewColumn Header="Copy Freq" Width="auto" DisplayMemberBinding="{Binding AutoCopyFrequency}" />
+                    <GridViewColumn Header="Delete Freq" Width="auto" DisplayMemberBinding="{Binding AutoDeleteFrequency}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</UserControl>
