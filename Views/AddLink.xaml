@@ -62,9 +62,9 @@
         </Grid>
 
         <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 10 0">
-            <Button Content="Cancel" Style="{StaticResource Button1}"/>
-            <Button Content="Add Destination" Style="{StaticResource Button1}" Command="{Binding AddDestLink}"/>
-            <Button Content="Done" Style="{StaticResource Button1}" Click="doneButton_Click"/>
+            <Button Content="Cancel" Style="{StaticResource Button1}" Click="cancelButton_Click" />
+            <Button Content="Add Destination" Style="{StaticResource Button1}" Command="{Binding AddDestLink}" />
+            <Button Content="Done" Style="{StaticResource Button1}" Click="doneButton_Click" />
        
         </StackPanel>
 

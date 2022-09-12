@@ -35,6 +35,11 @@ namespace BackupProgram.Views
             }
         }
 
+        private void cancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            closeWindow(sender, e);
+        }
+
         private void closeWindow(object sender, RoutedEventArgs e)
         {
             var window = Window.GetWindow(this);
