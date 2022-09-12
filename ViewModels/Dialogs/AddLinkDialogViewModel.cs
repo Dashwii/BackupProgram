@@ -99,11 +99,8 @@ namespace BackupProgram.ViewModels.Dialogs
         {
             if (parameter is null)
             {
-                _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result =>
-                {
-                    var test = result;
-                },
-                this, null, null
+                _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result => { },
+                this, DestLinks, null, null
                 );
             }
             else
@@ -119,11 +116,8 @@ namespace BackupProgram.ViewModels.Dialogs
                     AutoDeleteFrequency = requestedLink.AutoDeleteFrequency
                 });
 
-                _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result =>
-                {
-                    var test = result;
-                },
-                this, d, (int)parameter);
+                _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result => { },
+                this, DestLinks, d, (int)parameter); 
             }
         }
 
