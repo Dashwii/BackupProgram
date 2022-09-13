@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace BackupProgram.Models
 {
-    internal class DestLinkModel
+    internal class DestLinkModel : ILinkModel
     {
         public string FilePath { get; set; }
         public string Name => Path.GetFileName(FilePath);
         public bool IsEnabled { get; set; }
+
         // CloudDest will soon be another type. For now it's a bool.
         public bool CloudDest { get; set; }
         public int AutoCopyFrequency { get; set; }

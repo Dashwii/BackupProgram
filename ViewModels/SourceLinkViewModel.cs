@@ -10,18 +10,22 @@ using System.Windows.Media.Imaging;
 
 namespace BackupProgram.ViewModels
 {
-    internal class SourceLinkViewModel : ViewModelBase
+    internal class SourceLinkViewModel : ViewModelBase, ILinkViewModel
     {
         private SourceLinkModel _linkModel;
         public SourceLinkModel LinkModel => _linkModel;
 
-        public string Name => _linkModel.Name;
-
         public string FilePath
         {
             get { return _linkModel.FilePath; }
-            set { _linkModel.FilePath = value; }
+            set 
+            { 
+                _linkModel.FilePath = value;
+                Name = _linkModel.Name;
+            }
         }
+
+        public string Name { get; set; }
 
         public bool IsEnabled
         {
@@ -47,6 +51,7 @@ namespace BackupProgram.ViewModels
         public SourceLinkViewModel(SourceLinkModel linkModel)
         {
             _linkModel = linkModel;
+            Name = linkModel.Name;
             DestLinks = new();
 
             foreach (DestLinkModel link in _linkModel.DestLinks)
@@ -65,6 +70,17 @@ namespace BackupProgram.ViewModels
         {
             DestLinks.Add(new DestLinkViewModel(destLink));
             _linkModel.DestLinks.Add(destLink);
+        }
+
+        public void UpdateModelDestLinks()
+        {
+            _linkModel.DestLinks = DestLinks.Select(x => x.LinkModel).ToList();
+        }
+
+        public string ReturnLinkInfo()
+        {
+            var d = FilePath.Replace("\\", "/");
+            return @$"\b Path: \b0 {d}, \b Is Enabled: \b0 {IsEnabled}, \b Auto Copy Enabled: \b0 {AutoCopyEnabled}, \b Auto Delete Enabled: \b0 {AutoDeleteEnabled}";
         }
     }
 }

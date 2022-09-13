@@ -7,14 +7,10 @@ using System.Threading.Tasks;
 
 namespace BackupProgram.Models
 {
-    internal class SourceLinkModel : ILinkModel
+    internal interface ILinkModel
     {
         public string FilePath { get; set; }
-        public string Name => Path.GetFileName(FilePath);
+        public string Name { get; }
         public bool IsEnabled { get; set; }
-        public bool AutoCopyEnabled { get; set; }
-        public bool AutoDeleteEnabled { get; set; }
-        public List<DestLinkModel> DestLinks { get; set; }
     }
-
 }

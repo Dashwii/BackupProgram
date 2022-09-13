@@ -24,17 +24,27 @@ namespace BackupProgram.ViewModels
             set { _sourceLinks = value; }
         }
 
-        public SourceLinkViewModel? CurrentViewedLink { get; set; }
+/* How the link info box will work. 
+ * Whenever we click on a link we'll call a command and pass the current link
+ * in. Our command will set set a field with the string of the info of the most
+ * recently selected link.
+*/
+        public SourceLinkViewModel? CurrentSelectedSource { get; set; }
+        public ILinkViewModel? RecentClickedLink { get; set; }
+        public string RecentClickedLinkInfo => RecentClickedLink is null ? string.Empty : RecentClickedLink.ReturnLinkInfo();
 
-        public int SelectedDestIndex { get; set; }
+        #region Commands
 
         public ICommand RemoveSourceLink { get; set; }
         public ICommand RemoveDestLink { get; set; }
-        public ICommand ChangeSelectedLink { get; set; }
+        public ICommand SelectedSourceChanged { get; set; }
         public ICommand ShowAddLinkDialog { get; set; }
         public ICommand ShowAddDestLinkDialog { get; set; }
         public ICommand Copy { get; set; }
         public ICommand Save { get; set; }
+        public ICommand ClickedLink { get; set; }
+
+        #endregion
 
         IDialogService _dialogService;
         ICopyService _copyService;
@@ -45,9 +55,10 @@ namespace BackupProgram.ViewModels
             _dialogService = new DialogService();
             RemoveSourceLink = new BaseCommand(RemoveSourceLinkCommand);
             RemoveDestLink = new BaseCommand(RemoveDestLinkCommand);
-            ChangeSelectedLink = new BaseCommand(ChangeSelectedLinkCommand);
+            SelectedSourceChanged = new BaseCommand(SelectedSourceChangedCommand);
             ShowAddLinkDialog = new BaseCommand(ShowAddLinkDialogCommand);
             ShowAddDestLinkDialog = new BaseCommand(ShowAddDestLinkDialogCommand);
+            ClickedLink = new BaseCommand(ClickedLinkCommand);
             Copy = new BaseCommand(CopyCommand);
             Save = new BaseCommand(SaveCommand);
 
@@ -57,44 +68,37 @@ namespace BackupProgram.ViewModels
             }
         }
 
-        #region Commands
+        #region CommandMethods
 
         private void ShowAddLinkDialogCommand(object? paramater)
         {
-            if (paramater is null || (int)paramater == -1)
+            var item = (ListBoxItem)paramater!;
+            if (item is null)
             {
-                _dialogService.ShowDialog<AddLinkDialogViewModel>(result =>
-                {
-                    var test = result;
-                },
-                this, null, null);
+                _dialogService.ShowDialog<AddLinkDialogViewModel>(result => { },
+                false, null, SourceLinks);
             }
             else
             {
-                _dialogService.ShowDialog<AddLinkDialogViewModel>(result =>
-                {
-                    var test = result;
-                },
-                this, SourceLinks[(int)paramater], (int)paramater);
-
-                // Set CurrentViewedLink again due to it deselecting when we change our sourceLink object.
-                CurrentViewedLink = SourceLinks[(int)paramater];
+                _dialogService.ShowDialog<AddLinkDialogViewModel>(result => { },
+                true, item.Content, null);
             }
         }
 
         private void ShowAddDestLinkDialogCommand(object? parameter)
         {
-            // Create dummy destLink to prevent user from seeing edits in real time.
-            if (CurrentViewedLink is null) { return; }
-            if (parameter is null || (int)parameter == -1)
+            if (CurrentSelectedSource is null) { return; }
+            
+            var item = (ListBoxItem)parameter!;
+            if (item is null)
             { 
                 _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result => { },
-                    this, CurrentViewedLink.DestLinks, null, null);
+                    false, null, CurrentSelectedSource.DestLinks);
             }
             else
             {
                 _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result => { },
-                this, CurrentViewedLink.DestLinks, CurrentViewedLink.DestLinks[(int)parameter], (int)parameter);
+                true, item.Content, null);
             }
         }
 
@@ -119,32 +123,38 @@ namespace BackupProgram.ViewModels
 
         private void RemoveDestLinkCommand(object? parameter)
         {
-            if (parameter is null || CurrentViewedLink is null) { return; }
+            if (parameter is null || CurrentSelectedSource is null) { return; }
             int selectedIndex = (int)parameter;
-            if (CurrentViewedLink!.DestLinks.Count == 0)
+            if (CurrentSelectedSource.DestLinks.Count == 0)
             {
                 MessageBox.Show("No more dest links.");
                 return;
             }
             if (selectedIndex == -1)
             {
-                CurrentViewedLink!.DestLinks.RemoveAt(CurrentViewedLink!.DestLinks.Count - 1);
+                CurrentSelectedSource.DestLinks.RemoveAt(CurrentSelectedSource.DestLinks.Count - 1);
             }
             else
             {
-                CurrentViewedLink!.DestLinks.RemoveAt(selectedIndex);
+                CurrentSelectedSource.DestLinks.RemoveAt(selectedIndex);
             }
         }
 
-        private void ChangeSelectedLinkCommand(object? parameter)
+        private void SelectedSourceChangedCommand(object? parameter)
         {
-            if (parameter is null || (int)parameter == -1)
+            ListBox listBox = (ListBox)parameter!;
+            int selectedIndex = listBox.SelectedIndex;
+            if (selectedIndex == -1) { CurrentSelectedSource = null; }
+            else
             {
-                CurrentViewedLink = null;
-                return;
+                CurrentSelectedSource = (SourceLinkViewModel)listBox.SelectedItem;
             }
-            SourceLinkViewModel linkVM = SourceLinks[(int)parameter];
-            CurrentViewedLink = linkVM;
+        }
+
+        private void ClickedLinkCommand(object? parameter)
+        {
+            var item = (ListBoxItem)parameter!;
+            RecentClickedLink = (ILinkViewModel)item.Content;
         }
 
         private void CopyCommand(object? parameter)
@@ -154,8 +164,12 @@ namespace BackupProgram.ViewModels
 
         private void SaveCommand(object? parameter)
         {
-            var links = SourceLinks.Select(x => x.LinkModel).ToList();
-            LinkSaveLoadService.SaveLinksJson(links);
+            foreach (var link in SourceLinks)
+            {
+                link.UpdateModelDestLinks();
+            }
+            var linkModels = SourceLinks.Select(x => x.LinkModel).ToList();
+            LinkSaveLoadService.SaveLinksJson(linkModels);
         }
 
         #endregion 

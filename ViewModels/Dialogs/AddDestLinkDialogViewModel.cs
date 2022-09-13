@@ -14,9 +14,8 @@ namespace BackupProgram.ViewModels.Dialogs
 {
     internal class AddDestLinkDialogViewModel : DialogViewModelBase
     {
-        private int? _editIndex = null;
-        private object _parentViewModel;
-        private ObservableCollection<DestLinkViewModel> _parentDestLinksList;
+        private bool _editMode;
+        private ObservableCollection<DestLinkViewModel>? _parentList;
         private DestLinkViewModel _destLink;
         public DestLinkViewModel DestLink
         {
@@ -56,35 +55,30 @@ namespace BackupProgram.ViewModels.Dialogs
             set { _destLink.AutoDeleteFrequency = value; }
         }
 
+        /// <summary>
+        /// param[0] - editMode,
+        /// param[1] - existingLink,
+        /// param[2] - parentList
+        /// </summary>
+        /// <param name="paramList"></param>
+        /// <exception cref="ArgumentException"></exception>
         public AddDestLinkDialogViewModel(params object[] paramList)
         {
-            if (paramList.Length != 4) { throw new ArgumentException("Parameter Exception."); }
-
-            if (paramList[0] is LinkCollection)
-            {
-                _parentViewModel = (LinkCollection)paramList[0];
-            }
-            else
-            {
-                _parentViewModel = (AddLinkDialogViewModel)paramList[0];
-            }
-            _parentDestLinksList = (ObservableCollection<DestLinkViewModel>)paramList[1];
-            DestLinkViewModel? existingLink = (DestLinkViewModel?)paramList[2];
-            
-
-            if (existingLink is null)
+            if (paramList.Length != 3) { throw new ArgumentException("Parameter Exception."); }
+            _editMode = (bool)paramList[0];
+            if (!_editMode)
             {
                 var l = new DestLinkModel()
                 {
                     FilePath = string.Empty,
-                    IsEnabled = true,
+                    IsEnabled = true
                 };
-                _destLink = new(l);
+                _destLink = new DestLinkViewModel(l);
+                _parentList = (ObservableCollection<DestLinkViewModel>)paramList[2];
             }
             else
             {
-                _editIndex = (int)paramList[3];
-                _destLink = existingLink;
+                _destLink = (DestLinkViewModel)paramList[1];
             }
 
             Width = 630;
@@ -98,18 +92,11 @@ namespace BackupProgram.ViewModels.Dialogs
                 MessageBox.Show("Invalid Path.");
                 return false;
             }
-            else
+            if (!_editMode)
             {
-                if (_editIndex is not null)
-                {
-                    _parentDestLinksList[(int)_editIndex] = _destLink;
-                }
-                else
-                {
-                    _parentDestLinksList.Add(_destLink);
-                }
-                return true;
+                _parentList!.Add(_destLink);
             }
+            return true;
         }
         
     }

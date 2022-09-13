@@ -62,24 +62,24 @@
         </Grid>
 
         <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 10 0">
-            <Button Content="Cancel" Style="{StaticResource Button1}" Click="cancelButton_Click" />
-            <Button Content="Add Destination" Style="{StaticResource Button1}" Command="{Binding AddDestLink}" />
-            <Button Content="Done" Style="{StaticResource Button1}" Click="doneButton_Click" />
+            <Button Content="Cancel" Style="{StaticResource Button1}" Click="Button_Click_1" />
+            <Button Content="Add Destination" Style="{StaticResource Button1}" Click="Button_Click_2" />
+            <Button Content="Done" Style="{StaticResource Button1}" Click="Button_Click" />
        
         </StackPanel>
 
         <ListView Name="destLinkList" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" ItemsSource="{Binding DestLinks}" FontSize="18" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseDoubleClick">
-                    <i:InvokeCommandAction Command="{Binding AddDestLink}" CommandParameter="{Binding ElementName=destLinkList, Path=SelectedIndex}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
             <ListView.Resources>
                 <Style TargetType="GridViewColumnHeader">
                     <Setter Property="Padding" Value="5" />
                     <Setter Property="IsHitTestVisible" Value="False" />
                 </Style>
             </ListView.Resources>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <EventSetter Event="MouseDoubleClick" Handler="ListBoxItem_MouseDoubleClick" />
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView AllowsColumnReorder="False" ColumnHeaderToolTip="Destinations Links">
                     <!--Todo: Add tooltip for filepath in listview to show full path. -->

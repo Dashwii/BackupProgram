@@ -9,16 +9,22 @@ using System.Windows.Media.Imaging;
 
 namespace BackupProgram.ViewModels
 {
-    internal class DestLinkViewModel : ViewModelBase
+    internal class DestLinkViewModel : ViewModelBase, ILinkViewModel
     {
         private DestLinkModel _linkModel;
-        public string Name => _linkModel.Name;
-
+        public DestLinkModel LinkModel => _linkModel;
+        
         public string FilePath
         {
             get { return _linkModel.FilePath; }
-            set { _linkModel.FilePath = value; }
+            set 
+            { 
+                _linkModel.FilePath = value;
+                Name = _linkModel.Name;
+            }
         }
+
+        public string Name { get; set; }
 
         public bool IsEnabled
         {
@@ -49,6 +55,13 @@ namespace BackupProgram.ViewModels
         public DestLinkViewModel(DestLinkModel linkModel)
         {
             _linkModel = linkModel;
+            Name = linkModel.Name;
+        }
+
+        public string ReturnLinkInfo()
+        {
+            var d = FilePath.Replace("\\", "/");
+            return @$"\b Path: \b0 {d}, \b Is Enabled: \b0 {IsEnabled}, \b Cloud: \b0 {CloudDest}, \b Auto Copy Freq: \b0 {AutoCopyFrequency}, \b Auto Delete Freq: \b0 {AutoDeleteFrequency}";
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace BackupProgram.ViewModels.Dialogs
@@ -16,8 +17,8 @@ namespace BackupProgram.ViewModels.Dialogs
     internal class AddLinkDialogViewModel : DialogViewModelBase
     {
         #region Fields
-        private int? _editIndex = null;
-        private LinkCollection _parent;
+        private bool _editMode = false;
+        private ObservableCollection<SourceLinkViewModel>? _parentList;
         private SourceLinkViewModel _sourceLink;
 
         public SourceLinkViewModel SourceLink
@@ -65,15 +66,19 @@ namespace BackupProgram.ViewModels.Dialogs
 
         #endregion
 
+        /// <summary>
+        /// param[0] - editMode,
+        /// param[1] - existingLink,
+        /// param[2] - parentList
+        /// </summary>
+        /// <param name="paramList"></param>
+        /// <exception cref="ArgumentException"></exception>
         public AddLinkDialogViewModel(params object[] paramList)
         {
             if (paramList.Length != 3) { throw new ArgumentException("Parameter Exception."); }
             _dialogService = new DialogService();
-
-            _parent = (LinkCollection)paramList[0];
-            SourceLinkViewModel? existingLink = (SourceLinkViewModel?)paramList[1];
-
-            if (existingLink is null)
+            _editMode = (bool)paramList[0];
+            if (!_editMode)
             {
                 var l = new SourceLinkModel()
                 {
@@ -81,12 +86,12 @@ namespace BackupProgram.ViewModels.Dialogs
                     IsEnabled = true,
                     DestLinks = new()
                 };
-                _sourceLink = new(l);
+                _sourceLink = new SourceLinkViewModel(l);
+                _parentList = (ObservableCollection<SourceLinkViewModel>)paramList[2];
             }
             else
             {
-                _editIndex = (int)paramList[2];
-                _sourceLink = existingLink;
+                _sourceLink = (SourceLinkViewModel)paramList[1];
             }
 
             AddDestLink = new BaseCommand(ShowAddDestLinkDialogCommand);
@@ -100,24 +105,13 @@ namespace BackupProgram.ViewModels.Dialogs
             if (parameter is null)
             {
                 _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result => { },
-                this, DestLinks, null, null
-                );
+                false, null, DestLinks);
             }
             else
             {
-                // Create dummy destLink to prevent changes being reflected while user is editing.
-                var requestedLink = DestLinks[(int)parameter];
-                var d = new DestLinkViewModel(new DestLinkModel()
-                {
-                    FilePath = requestedLink.FilePath,
-                    IsEnabled = requestedLink.IsEnabled,
-                    CloudDest = requestedLink.CloudDest,
-                    AutoCopyFrequency = requestedLink.AutoCopyFrequency,
-                    AutoDeleteFrequency = requestedLink.AutoDeleteFrequency
-                });
-
+                var item = (ListBoxItem)parameter!;
                 _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result => { },
-                this, DestLinks, d, (int)parameter); 
+                true, item.Content, null); 
             }
         }
 
@@ -133,13 +127,9 @@ namespace BackupProgram.ViewModels.Dialogs
                 MessageBox.Show("No destination links.");
                 return false;
             }
-            if (_editIndex is not null)
+            if (!_editMode)
             {
-                _parent.SourceLinks[(int)_editIndex] = _sourceLink;
-            }
-            else
-            {
-                _parent.SourceLinks.Add(_sourceLink);
+                _parentList!.Add(_sourceLink);
             }
             return true;
         }
