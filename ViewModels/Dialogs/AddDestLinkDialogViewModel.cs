@@ -71,7 +71,8 @@ namespace BackupProgram.ViewModels.Dialogs
                 var l = new DestLinkModel()
                 {
                     FilePath = string.Empty,
-                    IsEnabled = true
+                    IsEnabled = true,
+                    LastAutoCopyDate = DateTime.Now.Date
                 };
                 _destLink = new DestLinkViewModel(l);
                 _parentList = (ObservableCollection<DestLinkViewModel>)paramList[2];
