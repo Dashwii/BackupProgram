@@ -1,5 +1,6 @@
 ﻿using BackupProgram.Models;
 using BackupProgram.ViewModels.Base;
+using BackupProgram.ViewModels.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,7 +11,7 @@ using System.Windows.Media.Imaging;
 
 namespace BackupProgram.ViewModels
 {
-    internal class SourceLinkViewModel : ViewModelBase, ILinkViewModel
+    public class SourceLinkViewModel : BaseViewModel, ILinkViewModel
     {
         private SourceLinkModel _linkModel;
         public SourceLinkModel LinkModel => _linkModel;

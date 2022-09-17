@@ -1,4 +1,6 @@
-﻿using BackupProgram.ViewModels;
+﻿using BackupProgram.Services.Interfaces;
+using BackupProgram.ViewModels;
+using BackupProgram.ViewModels.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,40 +10,49 @@ using System.Threading.Tasks;
 
 namespace BackupProgram.Services
 {
-    internal class CopyService : ICopyService
+    public class CopyService : IFileHandlingService
     {
-        private LinkCollection _linkCollection;
-
-        public CopyService(LinkCollection linkCollection)
+        public void Copy(List<SourceLinkViewModel> sourceLinks)
         {
-            _linkCollection = linkCollection;
-        }
-
-        public void Copy()
-        {
-            foreach (var link in _linkCollection.SourceLinks)
+            foreach (var link in sourceLinks)
             {
                 if (!link.IsEnabled) { continue; }
                 foreach (var dest in link.DestLinks)
                 {
                     if (!dest.IsEnabled) { continue; }
                     if (dest.CloudDest) { continue; }
-                    else
-                    {
-                        try
-                        {
-                            CopyDirectory(link.FilePath, dest.FilePath, false);
-                        }
-                        catch (Exception ex)
-                        {
-                            if (ex is IOException)
-                            {
-                                continue;
-                            }
-                            else { throw; }
-                        }
-                    }
+                    CopyDirectories(link.FilePath, dest.FilePath);
                 }
+            }
+        }
+
+        public void AutoCopy(List<SourceLinkViewModel> sourceLinks)
+        {
+            foreach (var link in sourceLinks)
+            {
+                if (!link.IsEnabled) { continue; }
+                foreach (var dest in link.DestLinks)
+                {
+                    if (!dest.IsEnabled) { continue; }
+                    if (dest.CloudDest) { continue; }
+                    if (!EligibleCopyTime(DateTime.Now.Date, dest.LastAutoCopyDate, dest.AutoCopyFrequency)) { continue; }
+                    CopyDirectory(link.FilePath, dest.FilePath, false);
+                    // If an exception is thrown don't set the date.
+                    dest.LastAutoCopyDate = DateTime.Now.Date;
+                }
+            }
+        }
+
+        private void CopyDirectories(string source, string destination)
+        {
+            try
+            {
+                CopyDirectory(source, destination, false);
+            }
+            catch (Exception e)
+            {
+                // Do logging in the future.
+                return;
             }
         }
 
@@ -95,6 +106,17 @@ namespace BackupProgram.Services
             string newDirectory = Path.Combine(dest, newFolderName);
             Directory.CreateDirectory(newDirectory);
             return newDirectory;
+        }
+
+        public bool EligibleCopyTime(DateTime currentTime, DateTime lastAutoCopyDate, int copyFrequency)
+        {
+            double timePassedSinceLastCopyInSeconds = (currentTime - lastAutoCopyDate).TotalSeconds;
+            double copyFrequencyInSeconds = TimeSpan.FromDays(copyFrequency).TotalSeconds;
+            if (timePassedSinceLastCopyInSeconds >= copyFrequencyInSeconds)
+            {
+                return true;
+            }
+            else { return false; }
         }
     }
 }

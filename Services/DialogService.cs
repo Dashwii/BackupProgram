@@ -1,4 +1,5 @@
-﻿using BackupProgram.ViewModels.Dialogs;
+﻿using BackupProgram.Services.Interfaces;
+using BackupProgram.ViewModels.Dialogs;
 using BackupProgram.Views;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Windows.Controls;
 
 namespace BackupProgram.Services
 {
-    internal class DialogService : IDialogService
+    public class DialogService : IDialogService
     {
         private static Dictionary<Type, Type> _mapping = new();
 

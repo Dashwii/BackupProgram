@@ -1,5 +1,6 @@
 ﻿using BackupProgram.Models;
 using BackupProgram.ViewModels.Base;
+using BackupProgram.ViewModels.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Windows.Media.Imaging;
 
 namespace BackupProgram.ViewModels
 {
-    internal class DestLinkViewModel : ViewModelBase, ILinkViewModel
+    public class DestLinkViewModel : BaseViewModel, ILinkViewModel
     {
         private DestLinkModel _linkModel;
         public DestLinkModel LinkModel => _linkModel;
@@ -48,6 +49,12 @@ namespace BackupProgram.ViewModels
         {
             get { return _linkModel.AutoDeleteFrequency; }
             set { _linkModel.AutoDeleteFrequency = value; }
+        }
+
+        public DateTime LastAutoCopyDate
+        {
+            get { return _linkModel.LastAutoCopyDate; }
+            set { _linkModel.LastAutoCopyDate = value; }
         }
 
         public BitmapImage ImagePath => new BitmapImage(IsEnabled == true ? new Uri("images/checkmark.jpg", UriKind.Relative) : new Uri("images/x.png", UriKind.Relative));

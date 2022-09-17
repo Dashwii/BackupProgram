@@ -1,5 +1,6 @@
 ﻿using BackupProgram.Models;
 using BackupProgram.Services;
+using BackupProgram.Services.Interfaces;
 using BackupProgram.ViewModels.Base;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ using System.Windows.Input;
 
 namespace BackupProgram.ViewModels.Dialogs
 {
-    internal class AddLinkDialogViewModel : DialogViewModelBase
+    public class AddLinkDialogViewModel : DialogViewModelBase
     {
         #region Fields
         private bool _editMode = false;

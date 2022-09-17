@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BackupProgram.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BackupProgram.Models
 {
-    internal class SourceLinkModel : ILinkModel
+    public class SourceLinkModel : ILinkModel
     {
         public string FilePath { get; set; }
         public string Name => Path.GetFileName(FilePath);

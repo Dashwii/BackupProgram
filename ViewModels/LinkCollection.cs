@@ -1,7 +1,9 @@
 ﻿using BackupProgram.Models;
 using BackupProgram.Services;
+using BackupProgram.Services.Interfaces;
 using BackupProgram.ViewModels.Base;
 using BackupProgram.ViewModels.Dialogs;
+using BackupProgram.ViewModels.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,8 +16,10 @@ using System.Windows.Input;
 
 namespace BackupProgram.ViewModels
 {
-    internal class LinkCollection : ViewModelBase
+    public class LinkCollection : BaseViewModel
     {
+        public event EventHandler ClosingRequest;
+
         private ObservableCollection<SourceLinkViewModel> _sourceLinks = new();
 
         public ObservableCollection<SourceLinkViewModel> SourceLinks
@@ -24,11 +28,6 @@ namespace BackupProgram.ViewModels
             set { _sourceLinks = value; }
         }
 
-/* How the link info box will work. 
- * Whenever we click on a link we'll call a command and pass the current link
- * in. Our command will set set a field with the string of the info of the most
- * recently selected link.
-*/
         public SourceLinkViewModel? CurrentSelectedSource { get; set; }
         public ILinkViewModel? RecentClickedLink { get; set; }
         public string RecentClickedLinkInfo => RecentClickedLink is null ? string.Empty : RecentClickedLink.ReturnLinkInfo();
@@ -47,11 +46,13 @@ namespace BackupProgram.ViewModels
         #endregion
 
         IDialogService _dialogService;
-        ICopyService _copyService;
+        CopyService _copyService;
+        DeleteService _deleteService;
 
         public LinkCollection(List<SourceLinkModel> links)
         {
-            _copyService = new CopyService(this);
+            _copyService = new CopyService();
+            _deleteService = new DeleteService();
             _dialogService = new DialogService();
             RemoveSourceLink = new BaseCommand(RemoveSourceLinkCommand);
             RemoveDestLink = new BaseCommand(RemoveDestLinkCommand);
@@ -66,6 +67,7 @@ namespace BackupProgram.ViewModels
             {
                 SourceLinks.Add(new SourceLinkViewModel(link));
             }
+            
         }
 
         #region CommandMethods
@@ -88,10 +90,10 @@ namespace BackupProgram.ViewModels
         private void ShowAddDestLinkDialogCommand(object? parameter)
         {
             if (CurrentSelectedSource is null) { return; }
-            
+
             var item = (ListBoxItem)parameter!;
             if (item is null)
-            { 
+            {
                 _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result => { },
                     false, null, CurrentSelectedSource.DestLinks);
             }
@@ -159,7 +161,9 @@ namespace BackupProgram.ViewModels
 
         private void CopyCommand(object? parameter)
         {
-            _copyService.Copy();
+            if (SourceLinks.Count() == 0) { MessageBox.Show("No source links."); return; }
+            _copyService.Copy(SourceLinks.ToList());
+            MessageBox.Show("Finished copying.");
         }
 
         private void SaveCommand(object? parameter)
@@ -172,6 +176,22 @@ namespace BackupProgram.ViewModels
             LinkSaveLoadService.SaveLinksJson(linkModels);
         }
 
-        #endregion 
+
+        #endregion
+
+        public void AutoRun()
+        {
+            _copyService.AutoCopy(SourceLinks.ToList());
+            _deleteService.Delete(SourceLinks.ToList());
+            OnClosingRequest();
+        }
+
+        private void OnClosingRequest()
+        {
+            if (ClosingRequest is not null)
+            {
+                ClosingRequest(this, EventArgs.Empty);
+            }
+        }
     }
 }

@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace BackupProgram.ViewModels
+namespace BackupProgram.ViewModels.Interfaces
 {
-    internal interface ILinkViewModel
+    public interface ILinkViewModel
     {
         public string Name { get; }
         public string FilePath { get; set; }

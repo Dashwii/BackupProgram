@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace BackupProgram.Services
+namespace BackupProgram.Services.Interfaces
 {
-    internal interface IDialogService
+    public interface IDialogService
     {
         public void ShowDialog(string name, Action<string> callback, params object?[] paramList);
         void ShowDialog<ViewModel>(Action<string> callback, params object?[] paramList);

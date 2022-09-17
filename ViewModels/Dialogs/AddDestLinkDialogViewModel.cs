@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace BackupProgram.ViewModels.Dialogs
 {
-    internal class AddDestLinkDialogViewModel : DialogViewModelBase
+    public class AddDestLinkDialogViewModel : DialogViewModelBase
     {
         private bool _editMode;
         private ObservableCollection<DestLinkViewModel>? _parentList;

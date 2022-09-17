@@ -1,4 +1,5 @@
 ﻿using BackupProgram.Models;
+using BackupProgram.Services.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BackupProgram.Services
 {
-    internal class LinkSaveLoadService : ILinkSaveLoadService
+    public class LinkSaveLoadService : IFileHandlingService
     {
         public static void SaveLinksJson(List<SourceLinkModel> links)
         {

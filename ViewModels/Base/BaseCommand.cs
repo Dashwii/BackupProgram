@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace BackupProgram.ViewModels.Base
 {
-    internal class BaseCommand : ICommand
+    public class BaseCommand : ICommand
     {
         public event EventHandler? CanExecuteChanged;
         public Action<object?> _action;

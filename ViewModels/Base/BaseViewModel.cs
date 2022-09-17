@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace BackupProgram.ViewModels.Base
 {
     [AddINotifyPropertyChangedInterface]
-    internal class ViewModelBase : INotifyPropertyChanged
+    public class BaseViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 

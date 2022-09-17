@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BackupProgram.ViewModels.Dialogs
 {
-    internal class DialogViewModelBase : ViewModelBase
+    public class DialogViewModelBase : BaseViewModel
     {
         public int Width { get; set; } = 450;
         public int Height { get; set; } = 800;

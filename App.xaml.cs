@@ -22,10 +22,15 @@ namespace BackupProgram
             base.OnStartup(e);
             DialogService.RegisterDialog<AddLinkDialogViewModel, AddLink>();
             DialogService.RegisterDialog<AddDestLinkDialogViewModel, AddDestLink>();
-            new MainWindow()
+            var d = new MainWindow();
+            var vm = new LinkCollection(LinkSaveLoadService.LoadLinksJson());
+            d.DataContext = vm;
+            vm.ClosingRequest += (sender, e) => d.Close();
+
+            if (e.Args.Length > 0)
             {
-                DataContext = new LinkCollection(LinkSaveLoadService.LoadLinksJson())
-            };
+                if (e.Args[0] == "true") { vm.AutoRun(); }
+            }
         }
     }
 }
