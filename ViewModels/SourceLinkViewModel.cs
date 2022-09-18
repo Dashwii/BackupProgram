@@ -51,10 +51,16 @@ namespace BackupProgram.ViewModels
 
         public SourceLinkViewModel(SourceLinkModel linkModel)
         {
-            _linkModel = linkModel;
-            Name = linkModel.Name;
+            _linkModel = new SourceLinkModel()
+            {
+                FilePath = linkModel.FilePath,
+                IsEnabled = linkModel.IsEnabled,
+                AutoCopyEnabled = linkModel.AutoCopyEnabled,
+                AutoDeleteEnabled = linkModel.AutoDeleteEnabled,
+                DestLinks = linkModel.DestLinks
+            };
+            Name = _linkModel.Name;
             DestLinks = new();
-
             foreach (DestLinkModel link in _linkModel.DestLinks)
             {
                 DestLinks.Add(new DestLinkViewModel(link));

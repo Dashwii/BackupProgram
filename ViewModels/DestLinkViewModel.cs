@@ -61,8 +61,16 @@ namespace BackupProgram.ViewModels
 
         public DestLinkViewModel(DestLinkModel linkModel)
         {
-            _linkModel = linkModel;
-            Name = linkModel.Name;
+            _linkModel = new DestLinkModel()
+            {
+                FilePath = linkModel.FilePath,
+                IsEnabled = linkModel.IsEnabled,
+                CloudDest = linkModel.CloudDest,
+                AutoCopyFrequency = linkModel.AutoCopyFrequency,
+                AutoDeleteFrequency = linkModel.AutoDeleteFrequency,
+                LastAutoCopyDate = linkModel.LastAutoCopyDate
+            };
+            Name = _linkModel.Name;
         }
 
         public string ReturnLinkInfo()
