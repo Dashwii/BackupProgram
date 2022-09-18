@@ -82,8 +82,18 @@ namespace BackupProgram.ViewModels
             }
             else
             {
-                _dialogService.ShowDialog<AddLinkDialogViewModel>(result => { },
-                true, item.Content, null);
+                // Create copy to prevent changes being made to real data until user is finished.
+                SourceLinkViewModel originalLink = (SourceLinkViewModel)item.Content;
+                SourceLinkViewModel copy = new SourceLinkViewModel(originalLink.LinkModel);
+                _dialogService.ShowDialog<AddLinkDialogViewModel>(result => 
+                {
+                    if (result)
+                    {
+                        int replaceIdx = SourceLinks.IndexOf(originalLink);
+                        SourceLinks[replaceIdx] = copy;
+                    }
+                },
+                true, copy, null);
             }
         }
 
@@ -110,9 +120,7 @@ namespace BackupProgram.ViewModels
                         CurrentSelectedSource.DestLinks[replaceIdx] = copy;
                     }
                 },
-                true, copy, null);
-                
-                
+                true, copy, null);    
             }
         }
 

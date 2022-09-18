@@ -48,6 +48,8 @@ namespace BackupProgram.Views
             AddLinkDialogViewModel vm = (AddLinkDialogViewModel)DataContext;
             if (vm.ConfirmLink())
             {
+                var window = Window.GetWindow(this);
+                window.DialogResult = true;
                 closeWindow(sender, e);
             }
         }
