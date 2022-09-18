@@ -10,6 +10,7 @@
   <ItemGroup>
     <None Remove="Views\Images\checkmark.jpg" />
     <None Remove="Views\Images\checkmark.png" />
+    <None Remove="Views\Images\icon.ico" />
     <None Remove="Views\Images\x.png" />
   </ItemGroup>
 
@@ -24,6 +25,7 @@
     <Resource Include="Views\Images\checkmark.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Views\Images\icon.ico" />
     <Resource Include="Views\Images\x.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
