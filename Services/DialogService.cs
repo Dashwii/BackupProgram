@@ -20,27 +20,27 @@ namespace BackupProgram.Services
             _mapping.Add(typeof(TviewModel), typeof(Tview));
         }
 
-        public void ShowDialog<TViewModel>(Action<string> callback, params object?[] paramList)
+        public void ShowDialog<TViewModel>(Action<bool> callback, params object?[] paramList)
         {
             var type = _mapping[typeof(TViewModel)];
             ShowDialogInternal(type, callback, typeof(TViewModel), paramList);
         }
 
-        public void ShowDialog(string name, Action<string> callback, params object?[] paramList)
+        public void ShowDialog(string name, Action<bool> callback, params object?[] paramList)
         {
             var type = Type.GetType($"BackupProgram.Views.{name}");
             if (type is null) { return; }
             ShowDialogInternal(type, callback, null, paramList);
         }
 
-        public void ShowDialogInternal(Type type, Action<string> callback, Type? vmType, params object?[] paramList)
+        public void ShowDialogInternal(Type type, Action<bool> callback, Type? vmType, params object?[] paramList)
         {
             var dialog = new DialogWindow();
 
             EventHandler closeEventHandler = null;
             closeEventHandler = (s, e) =>
             {
-                callback(dialog.DialogResult.ToString());
+                callback((bool)dialog.DialogResult);
                 dialog.Closed -= closeEventHandler;
             };
 

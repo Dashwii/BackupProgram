@@ -31,6 +31,8 @@ namespace BackupProgram.Views
             var context = DataContext as AddDestLinkDialogViewModel;
             if (context.ConfirmDestLink())
             {
+                var window = Window.GetWindow(this);
+                window.DialogResult = true;
                 closeWindow(sender, e);
             }
         }

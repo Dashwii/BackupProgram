@@ -99,8 +99,20 @@ namespace BackupProgram.ViewModels
             }
             else
             {
-                _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result => { },
-                true, item.Content, null);
+                // Create copy to prevent changes being made to real data until user is finished.
+                DestLinkViewModel originalLink = (DestLinkViewModel)item.Content;
+                DestLinkViewModel copy = new DestLinkViewModel(originalLink.LinkModel);
+                _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result => 
+                { 
+                    if (result)
+                    {
+                        int replaceIdx = CurrentSelectedSource.DestLinks.IndexOf(originalLink);
+                        CurrentSelectedSource.DestLinks[replaceIdx] = copy;
+                    }
+                },
+                true, copy, null);
+                
+                
             }
         }
 

@@ -103,6 +103,7 @@ namespace BackupProgram.ViewModels.Dialogs
 
         public void ShowAddDestLinkDialogCommand(object? parameter)
         {
+            var item = (ListBoxItem)parameter!;
             if (parameter is null)
             {
                 _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result => { },
@@ -110,9 +111,17 @@ namespace BackupProgram.ViewModels.Dialogs
             }
             else
             {
-                var item = (ListBoxItem)parameter!;
-                _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result => { },
-                true, item.Content, null); 
+                DestLinkViewModel originalLink = (DestLinkViewModel)item.Content;
+                DestLinkViewModel copy = new DestLinkViewModel(originalLink.LinkModel);
+                _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result =>
+                {
+                    if (result)
+                    {
+                        int replaceIdx = DestLinks.IndexOf(originalLink);
+                        DestLinks[replaceIdx] = copy;
+                    }
+                },
+                true, copy, null); 
             }
         }
 
@@ -133,6 +142,11 @@ namespace BackupProgram.ViewModels.Dialogs
                 _parentList!.Add(_sourceLink);
             }
             return true;
+        }
+
+        public void Canceled()
+        {
+            
         }
     }
 }

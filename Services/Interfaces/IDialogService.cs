@@ -9,7 +9,7 @@ namespace BackupProgram.Services.Interfaces
 {
     public interface IDialogService
     {
-        public void ShowDialog(string name, Action<string> callback, params object?[] paramList);
-        void ShowDialog<ViewModel>(Action<string> callback, params object?[] paramList);
+        public void ShowDialog(string name, Action<bool> callback, params object?[] paramList);
+        void ShowDialog<ViewModel>(Action<bool> callback, params object?[] paramList);
     }
 }
