@@ -37,7 +37,7 @@ namespace BackupProgram.Services
                     if (dest.CloudDest) { continue; }
                     if (!EligibleCopyTime(DateTime.Now.Date, dest.LastAutoCopyDate, dest.AutoCopyFrequency)) { continue; }
                     CopyDirectory(link.FilePath, dest.FilePath, false);
-                    // If an exception is thrown don't set the date.
+                    // In the future if an exception is thrown don't set the date.
                     dest.LastAutoCopyDate = DateTime.Now.Date;
                 }
             }

@@ -188,14 +188,10 @@ namespace BackupProgram.ViewModels
 
         private void SaveCommand(object? parameter)
         {
-            foreach (var link in SourceLinks)
-            {
-                link.UpdateModelDestLinks();
-            }
+            foreach (var link in SourceLinks) { link.UpdateModelDestLinks(); }
             var linkModels = SourceLinks.Select(x => x.LinkModel).ToList();
             LinkSaveLoadService.SaveLinksJson(linkModels);
         }
-
 
         #endregion
 
@@ -203,6 +199,12 @@ namespace BackupProgram.ViewModels
         {
             _copyService.AutoCopy(SourceLinks.ToList());
             _deleteService.Delete(SourceLinks.ToList());
+
+            foreach (var link in SourceLinks) { link.UpdateModelDestLinks(); }
+            var linkModels = SourceLinks.Select(x => x.LinkModel).ToList();
+            // Save copy dates.
+            LinkSaveLoadService.SaveLinksJson(linkModels);
+
             OnClosingRequest();
         }
 

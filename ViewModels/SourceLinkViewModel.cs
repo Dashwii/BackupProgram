@@ -79,6 +79,9 @@ namespace BackupProgram.ViewModels
             _linkModel.DestLinks.Add(destLink);
         }
 
+        /// <summary>
+        /// Use when saving links to a file so viewmodel data and model data sync.
+        /// </summary>
         public void UpdateModelDestLinks()
         {
             _linkModel.DestLinks = DestLinks.Select(x => x.LinkModel).ToList();
