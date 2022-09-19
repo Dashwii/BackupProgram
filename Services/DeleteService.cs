@@ -37,7 +37,7 @@ namespace BackupProgram.Services
                 {
                     if (Path.GetFileName(folder).Contains("꞉"))
                     {
-                        Directory.Delete(folder);
+                        Directory.Delete(folder, true);
                     }     
                 }
             }
