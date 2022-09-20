@@ -16,14 +16,14 @@ namespace BackupProgram.Services
         {
             if (links == null) { throw new ArgumentNullException(); }
             var jsonString = JsonConvert.SerializeObject(links, Formatting.Indented);
-            string path = Path.Combine(Environment.CurrentDirectory, "links.json");
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "links.json");
             File.WriteAllText(path, jsonString);
         }
 
         public static List<SourceLinkModel> LoadLinksJson()
         {
             List<SourceLinkModel> links = new();
-            string path = Path.Combine(Environment.CurrentDirectory, "links.json");
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "links.json");
             if (File.Exists(path))
             {
                 string data = File.ReadAllText(path);
