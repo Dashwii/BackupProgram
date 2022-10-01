@@ -110,6 +110,7 @@ namespace BackupProgram.Services
 
         public bool EligibleCopyTime(DateTime currentTime, DateTime lastAutoCopyDate, int copyFrequency)
         {
+            if (copyFrequency == 0) { return false; }
             double timePassedSinceLastCopyInSeconds = (currentTime - lastAutoCopyDate).TotalSeconds;
             double copyFrequencyInSeconds = TimeSpan.FromDays(copyFrequency).TotalSeconds;
             if (timePassedSinceLastCopyInSeconds >= copyFrequencyInSeconds)

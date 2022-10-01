@@ -45,6 +45,7 @@ namespace BackupProgram.Services
 
         public bool EligibleDeleteTime(DateTime currentTime, DateTime creationTime, int deleteFrequency)
         {
+            if (deleteFrequency == 0) { return false; }
             double fileAgeInSeconds = (currentTime - creationTime).TotalSeconds;
             double deleteFrequencyInSeconds = TimeSpan.FromDays(deleteFrequency).TotalSeconds;
             if (fileAgeInSeconds >= deleteFrequencyInSeconds)

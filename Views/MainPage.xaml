@@ -5,10 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BackupProgram.Views"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:vm="clr-namespace:BackupProgram.ViewModels"
              xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             FontSize="16">
+             FontSize="16"
+             Loaded="UserControl_Loaded">
 
     <UserControl.Resources>
         <DataTemplate x:Key="listBoxItemCommand">
@@ -46,13 +48,13 @@
                 <ListBox Name="sourceListBox" Grid.Column="0" Grid.Row="0" Margin="0 0 5 0" ItemsSource="{Binding SourceLinks}" HorizontalContentAlignment="Stretch">
                     <ListBox.Resources>
                         <Style TargetType="{x:Type ListBox}">
-                            <EventSetter Event="SelectionChanged" Handler="ListBox_SelectionChanged" />
+                            <EventSetter Event="SelectionChanged" Handler="SourceListBox_SelectionChanged" />
                         </Style>
                     </ListBox.Resources>
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ListBoxItem}">
-                            <EventSetter Event="MouseDoubleClick" Handler="ListBoxItem_MouseDoubleClick" />
-                            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListBoxItem_PreviewMouseLeftButtonDown" />
+                            <EventSetter Event="MouseDoubleClick" Handler="SourceListBoxItem_MouseDoubleClick" />
+                            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SourceListBoxItem_PreviewMouseLeftButtonDown" />
                         </Style>
                     </ListBox.ItemContainerStyle>
                     <ListBox.ItemTemplate>
@@ -76,15 +78,10 @@
                 </StackPanel>
 
                 <ListBox Name="destListBox" Grid.Column="1" Grid.Row="0" Margin="5 0 0 0" ItemsSource="{Binding CurrentSelectedSource.DestLinks}" HorizontalContentAlignment="Stretch">
-                    <ListBox.Resources>
-                        <Style TargetType="{x:Type ListBox}">
-                            <EventSetter Event="SelectionChanged" Handler="ListBox_SelectionChanged_1" />
-                        </Style>
-                    </ListBox.Resources>
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ListBoxItem}">
-                            <EventSetter Event="MouseDoubleClick" Handler="ListBoxItem_MouseDoubleClick_1" />
-                            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListBoxItem_PreviewMouseLeftButtonDown_1" />
+                            <EventSetter Event="MouseDoubleClick" Handler="DestinationListBoxItem_MouseDoubleClick" />
+                            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="DestinationListBoxItem_PreviewMouseLeftButtonDown" />
                         </Style>
                     </ListBox.ItemContainerStyle>
                     <ListBox.ItemTemplate>

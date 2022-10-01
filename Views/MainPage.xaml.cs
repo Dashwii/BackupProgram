@@ -21,44 +21,48 @@ namespace BackupProgram.Views
     /// </summary>
     public partial class MainPage : UserControl
     {
-        public MainPage()
+        private LinkCollection _viewModel = default!;
+
+        public LinkCollection ViewModel
         {
+            get => _viewModel;
+            private set => _viewModel = value;
+        }
+
+        public MainPage()
+        {     
             InitializeComponent();
         }
 
-        private void ListBoxItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            LinkCollection vm = (LinkCollection)DataContext;
-            vm.ShowAddLinkDialog.Execute(sender);
+            ViewModel = (LinkCollection)DataContext;
         }
 
-        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void SourceListBoxItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            LinkCollection vm = (LinkCollection)DataContext;
-            vm.SelectedSourceChanged.Execute(sender);
+            ViewModel.ShowAddLinkDialog.Execute(sender);
         }
 
-        private void ListBoxItem_MouseDoubleClick_1(object sender, MouseButtonEventArgs e)
+        private void SourceListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            LinkCollection vm = (LinkCollection)DataContext;
-            vm.ShowAddDestLinkDialog.Execute(sender);
+            ViewModel.SelectedSourceChanged.Execute(sender);
         }
 
-        private void ListBox_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
+        private void SourceListBoxItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            LinkCollection vm = (LinkCollection)DataContext;
+            ViewModel.ClickedLink.Execute(sender);
         }
 
-        private void ListBoxItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void DestinationListBoxItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            LinkCollection vm = (LinkCollection)DataContext;
-            vm.ClickedLink.Execute(sender);
+            ViewModel.ShowAddDestLinkDialog.Execute(sender);
         }
 
-        private void ListBoxItem_PreviewMouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
+        private void DestinationListBoxItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            LinkCollection vm = (LinkCollection)DataContext;
-            vm.ClickedLink.Execute(sender);
+            ViewModel.ClickedLink.Execute(sender);
         }
+        
     }
 }

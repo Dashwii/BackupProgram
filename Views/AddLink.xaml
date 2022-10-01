@@ -8,7 +8,9 @@
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="200"
-             FontSize="18">
+             FontSize="18"
+             Loaded="UserControl_Loaded">
+    
     <UserControl.Resources>
         <Style x:Key="Button1" TargetType="{x:Type Button}">
             <Setter Property="FontSize" Value="26" />
@@ -62,9 +64,9 @@
         </Grid>
 
         <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 10 0">
-            <Button Content="Cancel" Style="{StaticResource Button1}" Click="Button_Click_1" />
-            <Button Content="Add Destination" Style="{StaticResource Button1}" Click="Button_Click_2" />
-            <Button Content="Done" Style="{StaticResource Button1}" Click="Button_Click" />
+            <Button Content="Cancel" Style="{StaticResource Button1}" Click="CancelButton_Click" />
+            <Button Content="Add Destination" Style="{StaticResource Button1}" Click="AddDestinationButton_Click" />
+            <Button Content="Done" Style="{StaticResource Button1}" Click="DoneButton_Click" />
        
         </StackPanel>
 
@@ -77,7 +79,7 @@
             </ListView.Resources>
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
-                    <EventSetter Event="MouseDoubleClick" Handler="ListBoxItem_MouseDoubleClick" />
+                    <EventSetter Event="MouseDoubleClick" Handler="DestinationsListBoxItem_MouseDoubleClick" />
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.View>

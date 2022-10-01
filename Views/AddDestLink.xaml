@@ -6,7 +6,9 @@
              xmlns:local="clr-namespace:BackupProgram.Views" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             FontSize="18">
+             FontSize="18"
+             Loaded="UserControl_Loaded">
+    
     <UserControl.Resources>
         <Style x:Key="Button1" TargetType="{x:Type Button}">
             <Setter Property="FontSize" Value="24" />
@@ -57,8 +59,8 @@
             
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="1">
-            <Button Content="Cancel" Width="100" Style="{StaticResource Button1}" Click="closeWindow" />
-            <Button Content="Done" Width="100" Style="{StaticResource Button1}" Click="doneButton_Click" />
+            <Button Content="Cancel" Width="100" Style="{StaticResource Button1}" Click="CloseWindow" />
+            <Button Content="Done" Width="100" Style="{StaticResource Button1}" Click="DoneButton_Click" />
         </StackPanel>
 
     </Grid>

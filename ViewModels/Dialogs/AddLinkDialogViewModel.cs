@@ -24,40 +24,40 @@ namespace BackupProgram.ViewModels.Dialogs
 
         public SourceLinkViewModel SourceLink
         {
-            get { return _sourceLink; }
-            set { _sourceLink = value; }
+            get => _sourceLink;
+            set => _sourceLink = value;
         }
 
         public ObservableCollection<DestLinkViewModel> DestLinks
         {
-            get => _sourceLink.DestLinks;
-            set { _sourceLink.DestLinks = value; }
+            get => SourceLink.DestLinks;
+            set => SourceLink.DestLinks = value;
         }
 
         public string Name => _sourceLink.Name;
 
         public string FilePath
         {
-            get { return _sourceLink.FilePath; }
-            set { _sourceLink.FilePath = value; }
+            get => SourceLink.FilePath;
+            set => SourceLink.FilePath = value;
         }
 
         public bool IsEnabled
         {
-            get { return _sourceLink.IsEnabled; }
-            set { _sourceLink.IsEnabled = value; }
+            get => SourceLink.IsEnabled;
+            set => SourceLink.IsEnabled = value;
         }
 
         public bool AutoCopyEnabled
         {
-            get { return _sourceLink.AutoCopyEnabled; }
-            set { _sourceLink.AutoCopyEnabled = value; }
+            get => SourceLink.AutoCopyEnabled;
+            set => SourceLink.AutoCopyEnabled = value;
         }
 
         public bool AutoDeleteEnabled
         {
-            get { return _sourceLink.AutoDeleteEnabled; }
-            set { _sourceLink.AutoDeleteEnabled = value; }
+            get => SourceLink.AutoDeleteEnabled;
+            set => SourceLink.AutoDeleteEnabled = value;
         }
 
         public int SelectedDestIndex { get; set; }
@@ -79,6 +79,7 @@ namespace BackupProgram.ViewModels.Dialogs
             if (paramList.Length != 3) { throw new ArgumentException("Parameter Exception."); }
             _dialogService = new DialogService();
             _editMode = (bool)paramList[0];
+
             if (!_editMode)
             {
                 var l = new SourceLinkModel()

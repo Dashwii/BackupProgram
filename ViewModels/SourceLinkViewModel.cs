@@ -18,7 +18,7 @@ namespace BackupProgram.ViewModels
 
         public string FilePath
         {
-            get { return _linkModel.FilePath; }
+            get => LinkModel.FilePath;
             set 
             { 
                 _linkModel.FilePath = value;
@@ -30,23 +30,26 @@ namespace BackupProgram.ViewModels
 
         public bool IsEnabled
         {
-            get { return _linkModel.IsEnabled; }
-            set { _linkModel.IsEnabled = value; }
+            get => LinkModel.IsEnabled;
+            set => LinkModel.IsEnabled = value;
         }
 
         public bool AutoCopyEnabled
         {
-            get { return _linkModel.AutoCopyEnabled; }
-            set { _linkModel.AutoCopyEnabled = value; }
+            get => LinkModel.AutoCopyEnabled; 
+            set => LinkModel.AutoCopyEnabled = value;
         }
 
         public bool AutoDeleteEnabled
         {
-            get { return _linkModel.AutoDeleteEnabled; }
-            set { _linkModel.AutoDeleteEnabled = value; }
+            get => LinkModel.AutoDeleteEnabled; 
+            set => LinkModel.AutoDeleteEnabled = value;
         }
 
-        public BitmapImage ImagePath => new BitmapImage(IsEnabled == true ? new Uri("images/checkmark.jpg", UriKind.Relative) : new Uri("images/x.png", UriKind.Relative));
+        public BitmapImage ImagePath => 
+            new BitmapImage(
+                IsEnabled == true ? new Uri("images/checkmark.jpg", UriKind.Relative) : new Uri("images/x.png", UriKind.Relative)
+                );
         public ObservableCollection<DestLinkViewModel> DestLinks { get; set; }
 
         public SourceLinkViewModel(SourceLinkModel linkModel)

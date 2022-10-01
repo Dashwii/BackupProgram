@@ -21,26 +21,39 @@ namespace BackupProgram.Views
     /// </summary>
     public partial class AddDestLink : UserControl
     {
+        private AddDestLinkDialogViewModel _viewModel = default!;
+
+        public AddDestLinkDialogViewModel ViewModel
+        {
+            get => _viewModel;
+            private set => _viewModel = value;
+        }
+
         public AddDestLink()
         {
             InitializeComponent();
         }
 
-        private void doneButton_Click(object sender, RoutedEventArgs e)
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            var context = DataContext as AddDestLinkDialogViewModel;
-            if (context.ConfirmDestLink())
+            ViewModel = (AddDestLinkDialogViewModel)DataContext;
+        }
+
+        private void DoneButton_Click(object sender, RoutedEventArgs e)
+        { 
+            if (ViewModel.ConfirmDestLink())
             {
                 var window = Window.GetWindow(this);
                 window.DialogResult = true;
-                closeWindow(sender, e);
+                CloseWindow(sender, e);
             }
         }
 
-        private void closeWindow(object sender, RoutedEventArgs e)
+        private void CloseWindow(object sender, RoutedEventArgs e)
         {
             var window = Window.GetWindow(this);
             window.Close();
         }
+
     }
 }

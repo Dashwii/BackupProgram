@@ -21,58 +21,53 @@ namespace BackupProgram.Views
     /// </summary>
     public partial class AddLink : UserControl
     {
+        private AddLinkDialogViewModel _viewModel = default!;
+
+        public AddLinkDialogViewModel ViewModel
+        {
+            get => _viewModel;
+            private set => _viewModel = value;
+        }
+
         public AddLink()
         {
             InitializeComponent();
         }
 
-        private void closeWindow(object sender, RoutedEventArgs e)
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            ViewModel = (AddLinkDialogViewModel)DataContext;
+        }
+
+        private void CloseWindow(object sender, RoutedEventArgs e)
         {
             var window = Window.GetWindow(this);
             window.Close();
         }
 
-        private void ListBoxItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void DestinationsListBoxItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            AddLinkDialogViewModel vm = (AddLinkDialogViewModel)DataContext;
-            vm.AddDestLink.Execute(sender);
+            ViewModel.AddDestLink.Execute(sender);
         }
 
-        /// <summary>
-        /// Done button click.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void DoneButton_Click(object sender, RoutedEventArgs e)
         {
-            AddLinkDialogViewModel vm = (AddLinkDialogViewModel)DataContext;
-            if (vm.ConfirmLink())
+            if (ViewModel.ConfirmLink())
             {
                 var window = Window.GetWindow(this);
                 window.DialogResult = true;
-                closeWindow(sender, e);
+                CloseWindow(sender, e);
             }
         }
         
-        /// <summary>
-        /// Add destination button click.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void AddDestinationButton_Click(object sender, RoutedEventArgs e)
         {
-            AddLinkDialogViewModel vm = (AddLinkDialogViewModel)DataContext;
-            vm.AddDestLink.Execute(null);
+            ViewModel.AddDestLink.Execute(null);
         }
 
-        /// <summary>
-        /// Cancel button click.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            closeWindow(sender, e);
+            CloseWindow(sender, e);
         }
 
         

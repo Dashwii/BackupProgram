@@ -12,12 +12,13 @@ namespace BackupProgram.ViewModels
 {
     public class DestLinkViewModel : BaseViewModel, ILinkViewModel
     {
+        #region Fields
         private DestLinkModel _linkModel;
         public DestLinkModel LinkModel => _linkModel;
         
         public string FilePath
         {
-            get { return _linkModel.FilePath; }
+            get => LinkModel.FilePath;
             set 
             { 
                 _linkModel.FilePath = value;
@@ -29,35 +30,40 @@ namespace BackupProgram.ViewModels
 
         public bool IsEnabled
         {
-            get { return _linkModel.IsEnabled; }
-            set { _linkModel.IsEnabled = value; }
+            get => LinkModel.IsEnabled;
+            set => LinkModel.IsEnabled = value;
         }
 
         public bool CloudDest
         {
-            get { return _linkModel.CloudDest; }
-            set { _linkModel.CloudDest = value; }
+            get => LinkModel.CloudDest;
+            set => LinkModel.CloudDest = value;
         }
 
         public int AutoCopyFrequency
         {
-            get { return _linkModel.AutoCopyFrequency; }
-            set { _linkModel.AutoCopyFrequency = value; }
+            get => LinkModel.AutoCopyFrequency;
+            set => LinkModel.AutoCopyFrequency = value;
         }
 
         public int AutoDeleteFrequency
         {
-            get { return _linkModel.AutoDeleteFrequency; }
-            set { _linkModel.AutoDeleteFrequency = value; }
+            get => LinkModel.AutoDeleteFrequency;
+            set => LinkModel.AutoDeleteFrequency = value;
         }
 
         public DateTime LastAutoCopyDate
         {
-            get { return _linkModel.LastAutoCopyDate; }
-            set { _linkModel.LastAutoCopyDate = value; }
+            get => LinkModel.LastAutoCopyDate;
+            set => LinkModel.LastAutoCopyDate = value;
         }
 
-        public BitmapImage ImagePath => new BitmapImage(IsEnabled == true ? new Uri("images/checkmark.jpg", UriKind.Relative) : new Uri("images/x.png", UriKind.Relative));
+        public BitmapImage ImagePath => 
+            new BitmapImage(
+                IsEnabled == true ? new Uri("images/checkmark.jpg", UriKind.Relative) : new Uri("images/x.png", UriKind.Relative)
+                );
+
+        #endregion
 
         public DestLinkViewModel(DestLinkModel linkModel)
         {

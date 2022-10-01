@@ -14,46 +14,50 @@ namespace BackupProgram.ViewModels.Dialogs
 {
     public class AddDestLinkDialogViewModel : DialogViewModelBase
     {
+        #region Fields
         private bool _editMode;
         private ObservableCollection<DestLinkViewModel>? _parentList;
         private DestLinkViewModel _destLink;
+
         public DestLinkViewModel DestLink
         {
-            get { return _destLink; }
-            set { _destLink = value; }
+            get => _destLink;
+            set => _destLink = value;
         }
 
         public string Name => _destLink.Name;
 
         public string FilePath
         {
-            get { return _destLink.FilePath; }
-            set { _destLink.FilePath = value; }
+            get => DestLink.FilePath;
+            set => DestLink.FilePath = value;
         }
 
         public bool IsEnabled
         {
-            get { return _destLink.IsEnabled; }
-            set { _destLink.IsEnabled = value; }
+            get => DestLink.IsEnabled;
+            set => DestLink.IsEnabled = value;
         }
 
         public bool CloudDest
         {
-            get { return _destLink.CloudDest; }
-            set { _destLink.CloudDest = value; }
+            get => DestLink.CloudDest;
+            set => DestLink.CloudDest = value;
         }
 
         public int AutoCopyFrequency
         {
-            get { return _destLink.AutoCopyFrequency; }
-            set { _destLink.AutoCopyFrequency = value; }
+            get => DestLink.AutoCopyFrequency;
+            set => DestLink.AutoCopyFrequency = value;
         }
 
         public int AutoDeleteFrequency
         {
-            get { return _destLink.AutoDeleteFrequency; }
-            set { _destLink.AutoDeleteFrequency = value; }
+            get => DestLink.AutoDeleteFrequency; 
+            set => DestLink.AutoDeleteFrequency = value;
         }
+
+        #endregion
 
         /// <summary>
         /// param[0] - editMode,

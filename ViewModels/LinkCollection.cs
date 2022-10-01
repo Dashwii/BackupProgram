@@ -24,8 +24,8 @@ namespace BackupProgram.ViewModels
 
         public ObservableCollection<SourceLinkViewModel> SourceLinks
         {
-            get { return _sourceLinks; }
-            set { _sourceLinks = value; }
+            get => _sourceLinks;
+            set => _sourceLinks = value;
         }
 
         public SourceLinkViewModel? CurrentSelectedSource { get; set; }
@@ -70,7 +70,7 @@ namespace BackupProgram.ViewModels
             
         }
 
-        #region CommandMethods
+        #region MethodCommands
 
         private void ShowAddLinkDialogCommand(object? paramater)
         {
@@ -193,6 +193,7 @@ namespace BackupProgram.ViewModels
 
         #endregion
 
+        #region Methods
         public void AutoRun()
         {
             _copyService.AutoCopy(SourceLinks.ToList());
@@ -218,5 +219,6 @@ namespace BackupProgram.ViewModels
             var linkModels = SourceLinks.Select(x => x.LinkModel).ToList();
             LinkSaveLoadService.SaveLinksJson(linkModels);
         }
+        #endregion
     }
 }

@@ -24,8 +24,9 @@ namespace BackupProgram
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(LinkCollection viewModel)
         {
+            DataContext = viewModel;
             InitializeComponent();
             Show();
         }
