@@ -19,7 +19,7 @@ namespace BackupProgram.Views
     /// <summary>
     /// Interaction logic for UserControl1.xaml
     /// </summary>
-    public partial class MainPage : UserControl
+    public partial class HomeView : UserControl
     {
         private LinkCollection _viewModel = default!;
 
@@ -29,7 +29,7 @@ namespace BackupProgram.Views
             private set => _viewModel = value;
         }
 
-        public MainPage()
+        public HomeView()
         {     
             InitializeComponent();
         }

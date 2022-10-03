@@ -20,7 +20,7 @@ namespace BackupProgram.Services
                 foreach (var dest in link.DestLinks)
                 {
                     if (!dest.IsEnabled) { continue; }
-                    if (dest.CloudDest) { continue; }
+                    if (dest.DestType != Models.TargetType.LOCAL) { continue; }
                     CopyDirectories(link.FilePath, dest.FilePath);
                 }
             }
@@ -34,7 +34,7 @@ namespace BackupProgram.Services
                 foreach (var dest in link.DestLinks)
                 {
                     if (!dest.IsEnabled) { continue; }
-                    if (dest.CloudDest) { continue; }
+                    if (dest.DestType != Models.TargetType.LOCAL) { continue; }
                     if (!EligibleCopyTime(DateTime.Now.Date, dest.LastAutoCopyDate, dest.AutoCopyFrequency)) { continue; }
                     CopyDirectory(link.FilePath, dest.FilePath, false);
                     // In the future if an exception is thrown don't set the date.

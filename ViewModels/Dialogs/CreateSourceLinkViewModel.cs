@@ -2,6 +2,7 @@
 using BackupProgram.Services;
 using BackupProgram.Services.Interfaces;
 using BackupProgram.ViewModels.Base;
+using BackupProgram.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,7 +16,7 @@ using System.Windows.Input;
 
 namespace BackupProgram.ViewModels.Dialogs
 {
-    public class AddLinkDialogViewModel : DialogViewModelBase
+    public class CreateSourceLinkViewModel : DialogViewModelBase
     {
         #region Fields
         private bool _editMode = false;
@@ -74,7 +75,7 @@ namespace BackupProgram.ViewModels.Dialogs
         /// </summary>
         /// <param name="paramList"></param>
         /// <exception cref="ArgumentException"></exception>
-        public AddLinkDialogViewModel(params object[] paramList)
+        public CreateSourceLinkViewModel(params object[] paramList)
         {
             if (paramList.Length != 3) { throw new ArgumentException("Parameter Exception."); }
             _dialogService = new DialogService();
@@ -107,22 +108,23 @@ namespace BackupProgram.ViewModels.Dialogs
             var item = (ListBoxItem)parameter!;
             if (parameter is null)
             {
-                _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result => { },
-                false, null, DestLinks);
+                Action<DestLinkViewModel> myAction = (link) =>
+                {
+                    DestLinks.Add(link);
+                };
+                _dialogService.ShowDialog<MainCreateDestLinkView, MainCreateDestLinkViewModel>(myAction, false);
             }
             else
             {
                 DestLinkViewModel originalLink = (DestLinkViewModel)item.Content;
                 DestLinkViewModel copy = new DestLinkViewModel(originalLink.LinkModel);
-                _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result =>
+                int replaceIdx = DestLinks.IndexOf(originalLink);
+
+                Action<DestLinkViewModel> myAction = (link) =>
                 {
-                    if (result)
-                    {
-                        int replaceIdx = DestLinks.IndexOf(originalLink);
-                        DestLinks[replaceIdx] = copy;
-                    }
-                },
-                true, copy, null); 
+                    DestLinks[replaceIdx] = link;
+                };
+                _dialogService.ShowDialog<MainCreateDestLinkView, MainCreateDestLinkViewModel>(myAction, true, copy);
             }
         }
 
@@ -143,11 +145,6 @@ namespace BackupProgram.ViewModels.Dialogs
                 _parentList!.Add(_sourceLink);
             }
             return true;
-        }
-
-        public void Canceled()
-        {
-            
         }
     }
 }

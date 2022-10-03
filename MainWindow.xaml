@@ -8,6 +8,6 @@
         mc:Ignorable="d"
         Title="Backup Program" Icon="Views/Images/icon.ico" Height="650" Width="1080" MinHeight="400" MinWidth="800">
     <Grid>
-        <views:MainPage DataContext="{Binding}"/>
+        <views:HomeView DataContext="{Binding}"/>
     </Grid>
 </Window>

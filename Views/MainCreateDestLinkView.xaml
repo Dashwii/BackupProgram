@@ -1,0 +1,24 @@
+﻿<Window x:Class="BackupProgram.Views.MainCreateDestLinkView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BackupProgram.Views"
+        xmlns:vms="clr-namespace:BackupProgram.ViewModels.Dialogs"
+        mc:Ignorable="d"
+        Title="AddDestLinkWindow" Height="580" Width="1100">
+
+    <Grid Margin="30">
+        <ContentControl Content="{Binding CurrentViewModel}">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type vms:SelectDestLinkTypeViewModel}">
+                    <local:SelectDestLinkTypeView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vms:CreateDestLinkViewModel}">
+                    <local:CreateDestLinkView />
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
+    </Grid>
+    
+</Window>

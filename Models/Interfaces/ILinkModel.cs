@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BackupProgram.Models.Interfaces
 {
-    internal interface ILinkModel
+    public interface ILinkModel
     {
         public string FilePath { get; set; }
         public string Name { get; }

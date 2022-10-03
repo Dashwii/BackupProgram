@@ -20,8 +20,8 @@ namespace BackupProgram
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            DialogService.RegisterDialog<AddLinkDialogViewModel, AddLink>();
-            DialogService.RegisterDialog<AddDestLinkDialogViewModel, AddDestLink>();
+            DialogService.RegisterDialog<CreateSourceLinkViewModel, CreateSourceLinkView>();
+            DialogService.RegisterDialog<CreateDestLinkViewModel, CreateDestLinkView>();
             var vm = new LinkCollection(LinkSaveLoadService.LoadLinksJson());
             var d = new MainWindow(vm);
 

@@ -10,7 +10,11 @@
   <ItemGroup>
     <None Remove="Views\Images\checkmark.jpg" />
     <None Remove="Views\Images\checkmark.png" />
+    <None Remove="Views\Images\drive.png" />
+    <None Remove="Views\Images\dropbox.png" />
+    <None Remove="Views\Images\folder.png" />
     <None Remove="Views\Images\icon.ico" />
+    <None Remove="Views\Images\mega.png" />
     <None Remove="Views\Images\x.png" />
   </ItemGroup>
 
@@ -25,10 +29,18 @@
     <Resource Include="Views\Images\checkmark.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Views\Images\drive.png" />
+    <Resource Include="Views\Images\dropbox.png" />
+    <Resource Include="Views\Images\folder.png" />
     <Resource Include="Views\Images\icon.ico" />
+    <Resource Include="Views\Images\mega.png" />
     <Resource Include="Views\Images\x.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="if exist &quot;$(TargetPath).locked&quot; del &quot;$(TargetPath).locked&quot;&#xD;&#xA;if exist &quot;$(TargetPath)&quot; if not exist &quot;$(TargetPath).locked&quot; move &quot;$(TargetPath)&quot; &quot;$(TargetPath).locked&quot;&#xD;&#xA;" />
+  </Target>
 
 </Project>

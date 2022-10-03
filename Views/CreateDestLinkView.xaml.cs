@@ -19,34 +19,24 @@ namespace BackupProgram.Views
     /// <summary>
     /// Interaction logic for AddDestLink.xaml
     /// </summary>
-    public partial class AddDestLink : UserControl
+    public partial class CreateDestLinkView : UserControl
     {
-        private AddDestLinkDialogViewModel _viewModel = default!;
+        private CreateDestLinkViewModel _viewModel = default!;
 
-        public AddDestLinkDialogViewModel ViewModel
+        public CreateDestLinkViewModel ViewModel
         {
             get => _viewModel;
             private set => _viewModel = value;
         }
 
-        public AddDestLink()
+        public CreateDestLinkView()
         {
             InitializeComponent();
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            ViewModel = (AddDestLinkDialogViewModel)DataContext;
-        }
-
-        private void DoneButton_Click(object sender, RoutedEventArgs e)
-        { 
-            if (ViewModel.ConfirmDestLink())
-            {
-                var window = Window.GetWindow(this);
-                window.DialogResult = true;
-                CloseWindow(sender, e);
-            }
+            ViewModel = (CreateDestLinkViewModel)DataContext;
         }
 
         private void CloseWindow(object sender, RoutedEventArgs e)

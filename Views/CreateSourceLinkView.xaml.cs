@@ -19,24 +19,24 @@ namespace BackupProgram.Views
     /// <summary>
     /// Interaction logic for AddLink.xaml
     /// </summary>
-    public partial class AddLink : UserControl
+    public partial class CreateSourceLinkView : UserControl
     {
-        private AddLinkDialogViewModel _viewModel = default!;
+        private CreateSourceLinkViewModel _viewModel = default!;
 
-        public AddLinkDialogViewModel ViewModel
+        public CreateSourceLinkViewModel ViewModel
         {
             get => _viewModel;
             private set => _viewModel = value;
         }
 
-        public AddLink()
+        public CreateSourceLinkView()
         {
             InitializeComponent();
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            ViewModel = (AddLinkDialogViewModel)DataContext;
+            ViewModel = (CreateSourceLinkViewModel)DataContext;
         }
 
         private void CloseWindow(object sender, RoutedEventArgs e)

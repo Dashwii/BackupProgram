@@ -34,10 +34,10 @@ namespace BackupProgram.ViewModels
             set => LinkModel.IsEnabled = value;
         }
 
-        public bool CloudDest
+        public TargetType DestType
         {
-            get => LinkModel.CloudDest;
-            set => LinkModel.CloudDest = value;
+            get => LinkModel.DestType;
+            set => LinkModel.DestType = value;
         }
 
         public int AutoCopyFrequency
@@ -71,7 +71,7 @@ namespace BackupProgram.ViewModels
             {
                 FilePath = linkModel.FilePath,
                 IsEnabled = linkModel.IsEnabled,
-                CloudDest = linkModel.CloudDest,
+                DestType = linkModel.DestType,
                 AutoCopyFrequency = linkModel.AutoCopyFrequency,
                 AutoDeleteFrequency = linkModel.AutoDeleteFrequency,
                 LastAutoCopyDate = linkModel.LastAutoCopyDate
@@ -82,7 +82,23 @@ namespace BackupProgram.ViewModels
         public string ReturnLinkInfo()
         {
             var d = FilePath.Replace("\\", "/");
-            return @$"\b Path: \b0 {d}, \b Is Enabled: \b0 {IsEnabled}, \b Cloud: \b0 {CloudDest}, \b Auto Copy Freq: \b0 {AutoCopyFrequency}, \b Auto Delete Freq: \b0 {AutoDeleteFrequency}";
+            string destTypeString;
+            switch (DestType)
+            {
+                case TargetType.GOOGLE:
+                    destTypeString = "Google";
+                    break;
+                case TargetType.DROPBOX:
+                    destTypeString = "Dropbox";
+                    break;
+                case TargetType.MEGA:
+                    destTypeString = "Mega";
+                    break;
+                default:
+                    destTypeString = "Local";
+                    break;
+            }
+            return @$"\b Path: \b0 {d}, \b Is Enabled: \b0 {IsEnabled}, \b Type: \b0 {destTypeString}, \b Auto Copy Freq: \b0 {AutoCopyFrequency}, \b Auto Delete Freq: \b0 {AutoDeleteFrequency}";
         }
     }
 }

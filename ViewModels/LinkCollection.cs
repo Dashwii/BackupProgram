@@ -4,6 +4,7 @@ using BackupProgram.Services.Interfaces;
 using BackupProgram.ViewModels.Base;
 using BackupProgram.ViewModels.Dialogs;
 using BackupProgram.ViewModels.Interfaces;
+using BackupProgram.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -77,15 +78,16 @@ namespace BackupProgram.ViewModels
             var item = (ListBoxItem)paramater!;
             if (item is null)
             {
-                _dialogService.ShowDialog<AddLinkDialogViewModel>(result => { },
+                _dialogService.ShowInjectedUserControlDialog<CreateSourceLinkViewModel>(result => { },
                 false, null, SourceLinks);
             }
             else
             {
                 // Create copy to prevent changes being made to real data until user is finished.
                 SourceLinkViewModel originalLink = (SourceLinkViewModel)item.Content;
+                originalLink.UpdateModelDestLinks();
                 SourceLinkViewModel copy = new SourceLinkViewModel(originalLink.LinkModel);
-                _dialogService.ShowDialog<AddLinkDialogViewModel>(result => 
+                _dialogService.ShowInjectedUserControlDialog<CreateSourceLinkViewModel>(result => 
                 {
                     if (result)
                     {
@@ -104,23 +106,23 @@ namespace BackupProgram.ViewModels
             var item = (ListBoxItem)parameter!;
             if (item is null)
             {
-                _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result => { },
-                    false, null, CurrentSelectedSource.DestLinks);
+                Action<DestLinkViewModel> myAction = (link) =>
+                {
+                    CurrentSelectedSource.DestLinks.Add(link);
+                };
+                _dialogService.ShowDialog<MainCreateDestLinkView, MainCreateDestLinkViewModel>(myAction, false);
             }
             else
             {
                 // Create copy to prevent changes being made to real data until user is finished.
                 DestLinkViewModel originalLink = (DestLinkViewModel)item.Content;
                 DestLinkViewModel copy = new DestLinkViewModel(originalLink.LinkModel);
-                _dialogService.ShowDialog<AddDestLinkDialogViewModel>(result => 
-                { 
-                    if (result)
-                    {
-                        int replaceIdx = CurrentSelectedSource.DestLinks.IndexOf(originalLink);
-                        CurrentSelectedSource.DestLinks[replaceIdx] = copy;
-                    }
-                },
-                true, copy, null);    
+                int replaceIdx = CurrentSelectedSource.DestLinks.IndexOf(originalLink);
+                Action<DestLinkViewModel> myAction = (link) =>
+                {
+                    CurrentSelectedSource.DestLinks[replaceIdx] = link;
+                };
+                _dialogService.ShowDialog<MainCreateDestLinkView, MainCreateDestLinkViewModel>(myAction, true, copy);
             }
         }
 

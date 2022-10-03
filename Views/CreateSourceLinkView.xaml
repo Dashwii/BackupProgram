@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BackupProgram.Views.AddLink"
+﻿<UserControl x:Class="BackupProgram.Views.CreateSourceLinkView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -87,7 +87,13 @@
                     <!--Todo: Add tooltip for filepath in listview to show full path. -->
                     <GridViewColumn Header="Path" Width="400" DisplayMemberBinding="{Binding FilePath}" />
                     <GridViewColumn Header="Is Enabled" Width="auto" DisplayMemberBinding="{Binding IsEnabled}" />
-                    <GridViewColumn Header="Cloud" Width="auto" DisplayMemberBinding="{Binding CloudDest}" />
+                    <GridViewColumn Header="Type" Width="auto" >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image RenderOptions.BitmapScalingMode="HighQuality" Width="30" Height="30" Source="{Binding Path=DestType, Converter={x:Static local:TypeImageConverter.Instance}}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <GridViewColumn Header="Copy Freq" Width="auto" DisplayMemberBinding="{Binding AutoCopyFrequency}" />
                     <GridViewColumn Header="Delete Freq" Width="auto" DisplayMemberBinding="{Binding AutoDeleteFrequency}" />
                 </GridView>

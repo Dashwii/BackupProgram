@@ -1,4 +1,5 @@
 ﻿using BackupProgram.Services.Interfaces;
+using BackupProgram.ViewModels.Base;
 using BackupProgram.ViewModels.Dialogs;
 using BackupProgram.Views;
 using System;
@@ -20,35 +21,51 @@ namespace BackupProgram.Services
             _mapping.Add(typeof(TviewModel), typeof(Tview));
         }
 
-        public void ShowDialog<TViewModel>(Action<bool> callback, params object?[] paramList)
+        public void ShowDialog<TWindowType, TViewModelType>(params object?[] paramList)
+        {
+            var windowType = typeof(TWindowType);
+            var viewModelType = typeof(TViewModelType);
+            ShowDialogInternal(windowType, viewModelType, paramList);
+        }
+
+        private void ShowDialogInternal(Type WindowType, Type viewModelType, params object?[] paramList)
+        {
+            var window = (Window)Activator.CreateInstance(WindowType)!;
+            var vm = (BaseViewModel)Activator.CreateInstance(viewModelType, window, paramList)!;
+            window.DataContext = vm;
+            window.Owner = Application.Current?.Windows.OfType<Window>().FirstOrDefault(x => x.IsActive);
+            window.ShowDialog();
+
+        }
+
+        public void ShowInjectedUserControlDialog<TViewModel>(Action<bool> callback, params object?[] paramList)
         {
             var type = _mapping[typeof(TViewModel)];
-            ShowDialogInternal(type, callback, typeof(TViewModel), paramList);
+            ShowInjectedUserControlDialogInternal(type, callback, typeof(TViewModel), paramList);
         }
 
-        public void ShowDialog(string name, Action<bool> callback, params object?[] paramList)
+        public void ShowInjectedUserControlDialog<TViewModel>(params object?[] paramList)
         {
-            var type = Type.GetType($"BackupProgram.Views.{name}");
-            if (type is null) { return; }
-            ShowDialogInternal(type, callback, null, paramList);
+            var type = _mapping[typeof(TViewModel)];
+            ShowInjectedUserControlDialogInternal(type, null, typeof(TViewModel), paramList);
         }
 
-        public void ShowDialogInternal(Type type, Action<bool> callback, Type? vmType, params object?[] paramList)
+        private void ShowInjectedUserControlDialogInternal(Type type, Action<bool>? callback, Type? vmType, params object?[] paramList)
         {
             var dialog = new DialogWindow();
 
-            EventHandler closeEventHandler = null;
-            closeEventHandler = (s, e) =>
+            if (callback is not null)
             {
-                callback((bool)dialog.DialogResult);
-                dialog.Closed -= closeEventHandler;
-            };
-
-            dialog.Closed += closeEventHandler;
+                EventHandler closeEventHandler = null!;
+                closeEventHandler = (s, e) =>
+                {
+                    callback((bool)dialog.DialogResult!);
+                    dialog.Closed -= closeEventHandler;
+                };
+                dialog.Closed += closeEventHandler;
+            }
 
             dialog.Owner = Application.Current?.Windows.OfType<Window>().FirstOrDefault(x => x.IsActive);
-
-            if (type == null) { throw new ArgumentException("Invalid UserRefernce."); }
 
             var content = Activator.CreateInstance(type);
             if (vmType is not null)
