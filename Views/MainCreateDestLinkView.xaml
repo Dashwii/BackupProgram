@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:BackupProgram.Views"
         xmlns:vms="clr-namespace:BackupProgram.ViewModels.Dialogs"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Title="AddDestLinkWindow" Height="580" Width="1100">
 
     <Grid Margin="30">
