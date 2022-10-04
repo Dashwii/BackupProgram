@@ -12,8 +12,9 @@ namespace BackupProgram.Services
 {
     public class CopyService : IFileHandlingService
     {
-        public void Copy(List<SourceLinkViewModel> sourceLinks)
+        public async Task CopyAsync(List<SourceLinkViewModel> sourceLinks)
         {
+            var copyTasks = new List<Task>();
             foreach (var link in sourceLinks)
             {
                 if (!link.IsEnabled) { continue; }
@@ -21,13 +22,15 @@ namespace BackupProgram.Services
                 {
                     if (!dest.IsEnabled) { continue; }
                     if (dest.DestType != Models.TargetType.LOCAL) { continue; }
-                    CopyDirectories(link.FilePath, dest.FilePath);
+                    copyTasks.Add(HandleCopyingAsync(link.FilePath, dest.FilePath));
                 }
             }
+            await Task.WhenAll(copyTasks);
         }
 
-        public void AutoCopy(List<SourceLinkViewModel> sourceLinks)
+        public async Task AutoCopyAsync(List<SourceLinkViewModel> sourceLinks)
         {
+            var copyTasks = new List<Task>();
             foreach (var link in sourceLinks)
             {
                 if (!link.IsEnabled) { continue; }
@@ -36,22 +39,22 @@ namespace BackupProgram.Services
                     if (!dest.IsEnabled) { continue; }
                     if (dest.DestType != Models.TargetType.LOCAL) { continue; }
                     if (!EligibleCopyTime(DateTime.Now.Date, dest.LastAutoCopyDate, dest.AutoCopyFrequency)) { continue; }
-                    CopyDirectory(link.FilePath, dest.FilePath, false);
-                    // In the future if an exception is thrown don't set the date.
+                    copyTasks.Add(HandleCopyingAsync(link.FilePath, dest.FilePath));
                     dest.LastAutoCopyDate = DateTime.Now.Date;
                 }
             }
+            await Task.WhenAll(copyTasks);
         }
 
-        private void CopyDirectories(string source, string destination)
+        private async Task HandleCopyingAsync(string source, string destination)
         {
             try
             {
-                CopyDirectory(source, destination, false);
+                await Task.Run(() => CopyDirectory(source, destination, false));
             }
             catch (Exception e)
             {
-                // Do logging in the future.
+                // TODO: Log exceptions
                 return;
             }
         }

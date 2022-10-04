@@ -32,17 +32,25 @@ namespace BackupProgram.ViewModels
         public SourceLinkViewModel? CurrentSelectedSource { get; set; }
         public ILinkViewModel? RecentClickedLink { get; set; }
         public string RecentClickedLinkInfo => RecentClickedLink is null ? string.Empty : RecentClickedLink.ReturnLinkInfo();
+        
+        private bool _copyInProgress;
+
+        public bool CopyInProgress
+        {
+            get { return _copyInProgress; }
+            set { _copyInProgress = value;}
+        }
 
         #region Commands
 
-        public ICommand RemoveSourceLink { get; set; }
-        public ICommand RemoveDestLink { get; set; }
-        public ICommand SelectedSourceChanged { get; set; }
-        public ICommand ShowAddLinkDialog { get; set; }
-        public ICommand ShowAddDestLinkDialog { get; set; }
-        public ICommand Copy { get; set; }
-        public ICommand Save { get; set; }
-        public ICommand ClickedLink { get; set; }
+        public BaseCommand RemoveSourceLink { get; set; }
+        public BaseCommand RemoveDestLink { get; set; }
+        public BaseCommand SelectedSourceChanged { get; set; }
+        public BaseCommand ShowAddLinkDialog { get; set; }
+        public BaseCommand ShowAddDestLinkDialog { get; set; }
+        public BaseCommand Copy { get; set; }
+        public BaseCommand Save { get; set; }
+        public BaseCommand ClickedLink { get; set; }
 
         #endregion
 
@@ -61,7 +69,8 @@ namespace BackupProgram.ViewModels
             ShowAddLinkDialog = new BaseCommand(ShowAddLinkDialogCommand);
             ShowAddDestLinkDialog = new BaseCommand(ShowAddDestLinkDialogCommand);
             ClickedLink = new BaseCommand(ClickedLinkCommand);
-            Copy = new BaseCommand(CopyCommand);
+            Copy = new BaseCommand(CopyCommand, (_) => { return !CopyInProgress; },
+                this, nameof(CopyInProgress));
             Save = new BaseCommand(SaveCommand);
 
             foreach (var link in links)
@@ -181,11 +190,13 @@ namespace BackupProgram.ViewModels
             RecentClickedLink = (ILinkViewModel)item.Content;
         }
 
-        private void CopyCommand(object? parameter)
+        private async void CopyCommand(object? parameter)
         {
             if (SourceLinks.Count() == 0) { MessageBox.Show("No source links."); return; }
-            _copyService.Copy(SourceLinks.ToList());
+            CopyInProgress = true;
+            await _copyService.CopyAsync(SourceLinks.ToList());
             MessageBox.Show("Finished copying.");
+            CopyInProgress = false;
         }
 
         private void SaveCommand(object? parameter)
@@ -196,10 +207,10 @@ namespace BackupProgram.ViewModels
         #endregion
 
         #region Methods
-        public void AutoRun()
+        public async Task AutoRun()
         {
-            _copyService.AutoCopy(SourceLinks.ToList());
-            _deleteService.Delete(SourceLinks.ToList());
+            await _copyService.AutoCopyAsync(SourceLinks.ToList());
+            await _deleteService.DeleteAsync(SourceLinks.ToList());
 
             // Save copy dates.
             SaveLinks();

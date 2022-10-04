@@ -12,8 +12,9 @@ namespace BackupProgram.Services
 {
     public class DeleteService : IFileHandlingService
     {
-        public void Delete(List<SourceLinkViewModel> sourceLinks)
+        public async Task DeleteAsync(List<SourceLinkViewModel> sourceLinks)
         {
+            var deleteTasks = new List<Task>();
             foreach (var link in sourceLinks)
             {
                 if (!link.AutoDeleteEnabled) { continue; }
@@ -21,10 +22,12 @@ namespace BackupProgram.Services
                 {
                     if (!(destLink.AutoDeleteFrequency == 0))
                     {
-                        DeleteOldFilesInDirectory(destLink.FilePath, destLink.AutoDeleteFrequency);
+                        var task = new Task(() => DeleteOldFilesInDirectory(destLink.FilePath, destLink.AutoDeleteFrequency));
+                        deleteTasks.Add(task);
                     }
                 }
             }
+            await Task.WhenAll(deleteTasks);
         }
 
         public void DeleteOldFilesInDirectory(string dir, int deleteFrequency)

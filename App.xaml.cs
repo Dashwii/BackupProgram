@@ -29,7 +29,7 @@ namespace BackupProgram
 
             if (e.Args.Length > 0)
             {
-                if (e.Args[0] == "true") { vm.AutoRun(); }
+                if (e.Args[0] == "true") { vm.AutoRun().GetAwaiter(); }
             }
         }
     }
