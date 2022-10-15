@@ -24,10 +24,13 @@ namespace BackupProgram
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(LinkCollection viewModel)
+        public MainWindow(LinkCollection viewModel, bool autoRun)
         {
             DataContext = viewModel;
             InitializeComponent();
+
+            // If in auto running. Don't steal application focus. 
+            if (autoRun) { ShowActivated = false; WindowState = WindowState.Minimized; }
             Show();
         }
     }
