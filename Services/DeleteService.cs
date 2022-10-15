@@ -20,10 +20,11 @@ namespace BackupProgram.Services
                 if (!link.AutoDeleteEnabled) { continue; }
                 foreach (var destLink in link.DestLinks)
                 {
-                    if (!(destLink.AutoDeleteFrequency == 0))
+                    if (destLink.IsEnabled)
                     {
                         var task = new Task(() => DeleteOldFilesInDirectory(destLink.FilePath, destLink.AutoDeleteFrequency));
                         deleteTasks.Add(task);
+                        task.Start();
                     }
                 }
             }
@@ -32,9 +33,9 @@ namespace BackupProgram.Services
 
         public void DeleteOldFilesInDirectory(string dir, int deleteFrequency)
         {
+            DateTime currentTime = DateTime.Now.Date;
             foreach (var folder in Directory.GetDirectories(dir))
             {
-                DateTime currentTime = DateTime.Now.Date;
                 DateTime creationTime = Directory.GetCreationTime(folder);
                 if (EligibleDeleteTime(currentTime, creationTime, deleteFrequency))
                 {
