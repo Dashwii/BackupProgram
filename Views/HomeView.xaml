@@ -16,27 +16,43 @@
         <DataTemplate x:Key="listBoxItemCommand">
             <Button Command="{Binding ChangeSelectedLink}" />
         </DataTemplate>
+        <Style TargetType="Button" x:Key="ToggleIsEnabledButtonStyle">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <!--Quickest and eaiest way to have no background on hover for the toggle buttons. HitTestIsVisible="False" disables the button. Regular style triggers do nothing.-->
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
     <Grid>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="4*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="3*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <StackPanel VerticalAlignment="Center" Grid.Column="0" Grid.Row="0">
-                <Button Margin="20" Content="Copy" Padding="10"
+            <StackPanel Margin="20 10 20 0" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
+                <Button Margin="0 0 20 0" Content="Copy" Padding="30 5 30 5"
 					HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Command="{Binding Copy}" />
-                <Button Margin="20" Content="Save" Padding="10"
+                <Button Margin="0 0 20 0" Content="Save" Padding="30 5 30 5"
 					HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Command="{Binding Save}" />
+                <ProgressBar Margin="0 0 5 0" Value="{Binding CopyCompletionPercentage, Mode=OneWay}" Width="400" Visibility="{Binding CopyInProgress, Converter={x:Static local:CopyInProgressVisibilityConverter.Instance}}" />
+                <Button Content="x" Padding="5" Command="{Binding CancelCopy}" Visibility="{Binding CopyInProgress, Converter={x:Static local:CopyInProgressVisibilityConverter.Instance}}" />
             </StackPanel>
 
-            <Grid Grid.Column="1" Grid.Row="0" Margin="10 20 20 10">
+            <Grid Grid.Column="1" Grid.Row="1" Margin="20 10 20 10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
@@ -45,6 +61,7 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
+                
                 <ListBox Name="sourceListBox" Grid.Column="0" Grid.Row="0" Margin="0 0 5 0" ItemsSource="{Binding SourceLinks}" HorizontalContentAlignment="Stretch">
                     <ListBox.Resources>
                         <Style TargetType="{x:Type ListBox}">
@@ -61,11 +78,17 @@
                         <DataTemplate>
                             <Grid>
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"  />
                                     <ColumnDefinition Width="*"  />
                                     <ColumnDefinition Width="auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding Name}" />
-                                <Image RenderOptions.BitmapScalingMode="HighQuality" Grid.Column="1" Margin="3" Width="20" Height="20" Source="{Binding ImagePath}"/>
+                                <Image RenderOptions.BitmapScalingMode="HighQuality" Grid.Column="0" Source="./images/folder.png" Width="30" Height="30" Margin="3" /> 
+                                <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" />
+                                <Button Grid.Column="2" Style="{StaticResource ToggleIsEnabledButtonStyle}"
+                                        Command="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                                  AncestorType={x:Type UserControl}}, Path=DataContext.ToggleCurrentLinkIsEnabled}">
+                                    <Image RenderOptions.BitmapScalingMode="HighQuality" Margin="3" Width="20" Height="20" Source="{Binding ImagePath}"/>
+                                </Button>
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -94,7 +117,11 @@
                                 </Grid.ColumnDefinitions>
                                 <Image RenderOptions.BitmapScalingMode="HighQuality" Grid.Column="0" Margin="3" Width="30" Height="30" Source="{Binding Path=DestType, Converter={x:Static local:TypeImageConverter.Instance}}" />
                                 <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" />
-                                <Image RenderOptions.BitmapScalingMode="HighQuality" Grid.Column="2" Margin="3" Width="20" Height="20" Source="{Binding ImagePath}"/>
+                                <Button Grid.Column="2" Style="{StaticResource ToggleIsEnabledButtonStyle}"
+                                        Command="{Binding RelativeSource={RelativeSource FindAncestor,
+                                                  AncestorType={x:Type UserControl}}, Path=DataContext.ToggleCurrentLinkIsEnabled}">
+                                    <Image RenderOptions.BitmapScalingMode="HighQuality" Margin="3" Width="20" Height="20" Source="{Binding ImagePath}"/>
+                                </Button>
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

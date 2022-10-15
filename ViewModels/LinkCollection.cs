@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -41,6 +42,10 @@ namespace BackupProgram.ViewModels
             set { _copyInProgress = value;}
         }
 
+        public int CopyCompletionPercentage { get; set; }
+
+        private CancellationTokenSource _cancellationToken = new(); 
+
         #region Commands
 
         public BaseCommand RemoveSourceLink { get; set; }
@@ -50,7 +55,9 @@ namespace BackupProgram.ViewModels
         public BaseCommand ShowAddDestLinkDialog { get; set; }
         public BaseCommand Copy { get; set; }
         public BaseCommand Save { get; set; }
+        public BaseCommand CancelCopy { get; set; }
         public BaseCommand ClickedLink { get; set; }
+        public BaseCommand ToggleCurrentLinkIsEnabled { get; set; }
 
         #endregion
 
@@ -60,7 +67,9 @@ namespace BackupProgram.ViewModels
 
         public LinkCollection(List<SourceLinkModel> links)
         {
-            _copyService = new CopyService();
+            Progress<CopyProgressModel> progress = new();
+            progress.ProgressChanged += UpdateProgress;
+            _copyService = new CopyService(progress, _cancellationToken.Token);
             _deleteService = new DeleteService();
             _dialogService = new DialogService();
             RemoveSourceLink = new BaseCommand(RemoveSourceLinkCommand);
@@ -72,6 +81,8 @@ namespace BackupProgram.ViewModels
             Copy = new BaseCommand(CopyCommand, (_) => { return !CopyInProgress; },
                 this, nameof(CopyInProgress));
             Save = new BaseCommand(SaveCommand);
+            CancelCopy = new BaseCommand(CancelCopyCommand);
+            ToggleCurrentLinkIsEnabled = new BaseCommand(ToggleCurrentLinkIsEnabledCommand);
 
             foreach (var link in links)
             {
@@ -194,8 +205,26 @@ namespace BackupProgram.ViewModels
         {
             if (SourceLinks.Count() == 0) { MessageBox.Show("No source links."); return; }
             CopyInProgress = true;
-            await _copyService.CopyAsync(SourceLinks.ToList());
-            MessageBox.Show("Finished copying.");
+            bool cancelled = false;
+            try
+            {
+                await _copyService.CopyAsync(SourceLinks.ToList());
+            }
+            catch (Exception e)
+            {
+                if (e is OperationCanceledException) 
+                { 
+                    MessageBox.Show("Copying cancelled."); 
+                    cancelled = true;
+                    ResetCancelCopyToken();
+                }
+                else { }
+            }
+            if (!cancelled)
+            {
+                MessageBox.Show("Finished copying.");
+            }
+            _copyService.ResetProgress();
             CopyInProgress = false;
         }
 
@@ -204,18 +233,49 @@ namespace BackupProgram.ViewModels
             SaveLinks();
         }
 
+        private void CancelCopyCommand(object? parameter)
+        {
+            CancelCopyInProgress();
+        }
+
+        private void ToggleCurrentLinkIsEnabledCommand(object? paremeter)
+        {
+            if (RecentClickedLink is null) { return; }
+            RecentClickedLink.IsEnabled = !RecentClickedLink.IsEnabled;
+        }
+
         #endregion
 
         #region Methods
         public async Task AutoRun()
         {
-            await _copyService.AutoCopyAsync(SourceLinks.ToList());
+            bool cancelled = false;
+            CopyInProgress = true;
+            try
+            {
+                await _copyService.AutoCopyAsync(SourceLinks.ToList());
+            }
+            catch (Exception e)
+            {
+                if (e is OperationCanceledException) 
+                { 
+                    MessageBox.Show("Copying cancelled."); 
+                    cancelled = true;
+                    ResetCancelCopyToken();
+                }
+            }
+            finally { CopyInProgress = false; }
+
             await _deleteService.DeleteAsync(SourceLinks.ToList());
 
-            // Save copy dates.
             SaveLinks();
+            if (!cancelled) { OnClosingRequest(); }
+         
+        }
 
-            OnClosingRequest();
+        private void UpdateProgress(object? sender, CopyProgressModel e)
+        {
+            CopyCompletionPercentage = e.CompletionPercentage;
         }
 
         private void OnClosingRequest()
@@ -231,6 +291,18 @@ namespace BackupProgram.ViewModels
             foreach (var link in SourceLinks) { link.UpdateModelDestLinks(); }
             var linkModels = SourceLinks.Select(x => x.LinkModel).ToList();
             LinkSaveLoadService.SaveLinksJson(linkModels);
+        }
+
+        private void CancelCopyInProgress()
+        {
+            _cancellationToken.Cancel();
+        }
+
+        private void ResetCancelCopyToken()
+        {
+            _cancellationToken.Dispose();
+            _cancellationToken = new();
+            _copyService.CancellationToken = _cancellationToken.Token;
         }
         #endregion
     }

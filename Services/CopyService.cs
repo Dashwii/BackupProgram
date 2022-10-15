@@ -6,95 +6,196 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BackupProgram.Services
 {
+    public class CopyProgressModel
+    {
+        public int CompletionPercentage { get; set; } = 0;
+    }
+
     public class CopyService : IFileHandlingService
     {
+        private int _totalFilesNeededCount = 0;
+        private int _filesCopied = 0;
+        public IProgress<CopyProgressModel> CopyProgressTracker;
+        public CancellationToken CancellationToken { get; set; }
+
+        public CopyService(IProgress<CopyProgressModel> CopyProgressTracker, CancellationToken cancellationToken)
+        {
+            this.CopyProgressTracker = CopyProgressTracker;
+            CancellationToken = cancellationToken;
+        }
+
         public async Task CopyAsync(List<SourceLinkViewModel> sourceLinks)
         {
             var copyTasks = new List<Task>();
+
+            GatherFilesForProgress(sourceLinks);
+
             foreach (var link in sourceLinks)
             {
-                if (!link.IsEnabled) { continue; }
+                if (!EligibleCopy(link)) { continue; }
                 foreach (var dest in link.DestLinks)
                 {
-                    if (!dest.IsEnabled) { continue; }
-                    if (dest.DestType != Models.TargetType.LOCAL) { continue; }
+                    if (!EligibleCopy(link)) { continue; }
                     copyTasks.Add(HandleCopyingAsync(link.FilePath, dest.FilePath));
                 }
             }
-            await Task.WhenAll(copyTasks);
+
+            try
+            {
+                await Task.WhenAll(copyTasks);
+            }
+            catch (Exception e)
+            {
+                if (e is OperationCanceledException) { throw; }
+                else { return; }
+            }
         }
 
         public async Task AutoCopyAsync(List<SourceLinkViewModel> sourceLinks)
         {
             var copyTasks = new List<Task>();
+
+            GatherFilesForProgress(sourceLinks);
+
             foreach (var link in sourceLinks)
             {
-                if (!link.IsEnabled) { continue; }
+                if (!EligibleAutoCopy(link)) { continue; }
                 foreach (var dest in link.DestLinks)
                 {
-                    if (!dest.IsEnabled) { continue; }
-                    if (dest.DestType != Models.TargetType.LOCAL) { continue; }
-                    if (!EligibleCopyTime(DateTime.Now.Date, dest.LastAutoCopyDate, dest.AutoCopyFrequency)) { continue; }
+                    if (!EligibleCopy(dest)) { continue; }
+                    if (!EligibleAutoCopyTime(DateTime.Now.Date, dest.LastAutoCopyDate, dest.AutoCopyFrequency)) { continue; }
                     copyTasks.Add(HandleCopyingAsync(link.FilePath, dest.FilePath));
                     dest.LastAutoCopyDate = DateTime.Now.Date;
                 }
             }
-            await Task.WhenAll(copyTasks);
+            try
+            {
+                await Task.WhenAll(copyTasks);
+            }
+            catch (Exception e)
+            {
+                if (e is OperationCanceledException) { throw; }
+                else { return; }
+            }
+
         }
 
         private async Task HandleCopyingAsync(string source, string destination)
         {
             try
             {
-                await Task.Run(() => CopyDirectory(source, destination, false));
+                // Create new folder for files to reside in. 
+                string copyFolder = await Task.Run(() => CreateCopyFolder(source, destination));
+                await Task.Run(() => CopyDirectory(source, copyFolder));
             }
             catch (Exception e)
             {
-                // TODO: Log exceptions
-                return;
+                if (e is OperationCanceledException) { throw; }
+                else
+                {
+                    // TODO: Log error.
+                    return;
+                }
             }
         }
 
-        private void CopyDirectory(string source, string destination, bool recursive)
+        private void CopyDirectory(string source, string copyFolder)
         {
             var info = new DirectoryInfo(source);
-            if (!info.Exists) { throw new DirectoryNotFoundException($"Source directory {info.FullName} not found."); }
-
-            if (recursive)
+            foreach (FileInfo file in info.GetFiles())
             {
-                Directory.CreateDirectory(destination);
-                foreach (FileInfo file in info.GetFiles())
-                {
-                    string targetFileName = Path.Combine(destination, file.Name);
-                    file.CopyTo(targetFileName);
-                }
-                foreach (DirectoryInfo subDir in info.GetDirectories())
-                {
-                    string newDestinationDir = Path.Combine(destination, subDir.Name);
-                    CopyDirectory(subDir.FullName, newDestinationDir, true);
-                }
+                string targetFilename = Path.Combine(copyFolder, file.Name);
+                file.CopyTo(targetFilename);
+                _filesCopied += 1;
+                UpdateProgress();
+                CancellationToken.ThrowIfCancellationRequested();
+            }
+            foreach (DirectoryInfo subDir in info.GetDirectories())
+            {
+                // Create new sub directory in destination.
+                string newSubDirDest = Path.Combine(copyFolder, subDir.Name);
+                Directory.CreateDirectory(newSubDirDest);
+
+                CopyDirectory(subDir.FullName, newSubDirDest);
+            }
+
+        }
+        
+        private void UpdateProgress()
+        {
+            CopyProgressModel report = new CopyProgressModel();
+            if (_totalFilesNeededCount == 0)
+            {
+                report.CompletionPercentage = 0;
             }
             else
             {
-                string newDirectory = CreateNewDirectory(source, destination);
-                foreach (FileInfo file in info.GetFiles())
+                report.CompletionPercentage = (_filesCopied * 100) / _totalFilesNeededCount;
+            }
+            CopyProgressTracker.Report(report);
+        }
+
+        public void ResetProgress()
+        {
+            _filesCopied = 0;
+            _totalFilesNeededCount = 0;
+            UpdateProgress();
+        }
+
+        private void GatherFilesForProgress(List<SourceLinkViewModel> sourceLinks)
+        {
+            foreach (var link in sourceLinks)
+            {
+                if (!link.IsEnabled) { continue; }
+                int multiplierCount = 0;
+
+                foreach (var destLink in link.DestLinks)
                 {
-                    string targetFileName = Path.Combine(newDirectory, file.Name);
-                    file.CopyTo(targetFileName);
+                    if (!destLink.IsEnabled) { continue; }
+                    multiplierCount += 1;
                 }
-                foreach (DirectoryInfo subDir in info.GetDirectories())
-                {
-                    string newDestinationDir = Path.Combine(newDirectory, subDir.Name);
-                    CopyDirectory(subDir.FullName, newDestinationDir, true);
-                }
+
+                var linkTotalFileCount = Directory.EnumerateFiles(link.FilePath, "*.*", SearchOption.AllDirectories).Count();
+                linkTotalFileCount *= multiplierCount;
+                _totalFilesNeededCount += linkTotalFileCount;
             }
         }
 
-        private string CreateNewDirectory(string source, string dest)
+        private bool EligibleCopy(ILinkViewModel link)
+        {
+            
+            if (!Directory.Exists(link.FilePath))
+            {
+                // TODO: Alert user.
+                return false;
+            }
+            if (!link.IsEnabled) { return false; }
+            if (link is DestLinkViewModel)
+            {
+                var d = (DestLinkViewModel)link;
+                if (d.DestType != Models.TargetType.LOCAL) { return false; }
+            }
+            return true;
+        }
+
+        private bool EligibleAutoCopy(ILinkViewModel link)
+        {
+
+            if (!EligibleCopy(link)) { return false; }
+            if (link is SourceLinkViewModel)
+            {
+                var s = (SourceLinkViewModel)link;
+                if (!s.AutoCopyEnabled) { return false; }
+            }
+            return true;
+        }
+
+        private string CreateCopyFolder(string source, string dest)
         {
             string newFolderName;
             try
@@ -111,7 +212,7 @@ namespace BackupProgram.Services
             return newDirectory;
         }
 
-        public bool EligibleCopyTime(DateTime currentTime, DateTime lastAutoCopyDate, int copyFrequency)
+        public bool EligibleAutoCopyTime(DateTime currentTime, DateTime lastAutoCopyDate, int copyFrequency)
         {
             if (copyFrequency == 0) { return false; }
             double timePassedSinceLastCopyInSeconds = (currentTime - lastAutoCopyDate).TotalSeconds;
