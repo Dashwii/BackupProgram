@@ -20,17 +20,22 @@ namespace BackupProgram
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            bool autoRun = false;
+            if (e.Args.Length > 0)
+            { 
+                if (e.Args[0] == "true") { autoRun = true; }
+            }
+
             DialogService.RegisterDialog<CreateSourceLinkViewModel, CreateSourceLinkView>();
             DialogService.RegisterDialog<CreateDestLinkViewModel, CreateDestLinkView>();
+
             var vm = new LinkCollection(LinkSaveLoadService.LoadLinksJson());
-            var d = new MainWindow(vm);
-
+            var d = new MainWindow(vm, autoRun);
             vm.ClosingRequest += (sender, e) => d.Close();
+            if (autoRun) { vm.AutoRun().GetAwaiter(); }
 
-            if (e.Args.Length > 0)
-            {
-                if (e.Args[0] == "true") { vm.AutoRun().GetAwaiter(); }
-            }
         }
     }
 }
+
+
