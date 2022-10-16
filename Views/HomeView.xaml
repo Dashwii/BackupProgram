@@ -30,6 +30,29 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style TargetType="TextBlock" x:Key="animatedTextBlock">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding DeletingInCompleteDirectories}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <StringAnimationUsingKeyFrames
+                                                    Storyboard.TargetProperty="Text"
+                                                    Duration="0:0:2"
+                                                    RepeatBehavior="Forever">
+                                    <DiscreteStringKeyFrame Value="Cleaning up" KeyTime="0:0:0" />
+                                    <DiscreteStringKeyFrame Value="Cleaning up." KeyTime="0:0:0.5" />
+                                    <DiscreteStringKeyFrame Value="Cleaning up.." KeyTime="0:0:1" />
+                                    <DiscreteStringKeyFrame Value="Cleaning up..." KeyTime="0:0:1.5" />
+                                </StringAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
     </UserControl.Resources>
 
     <Grid>
@@ -44,12 +67,14 @@
             </Grid.RowDefinitions>
 
             <StackPanel Margin="20 10 20 0" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
-                <Button Margin="0 0 20 0" Content="Copy" Padding="30 5 30 5"
+                <Button Margin="0 0 10 0" Content="Copy" Padding="30 5 30 5"
 					HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Command="{Binding Copy}" />
-                <Button Margin="0 0 20 0" Content="Save" Padding="30 5 30 5"
+                <Button Margin="0 0 10 0" Content="Save" Padding="30 5 30 5"
 					HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Command="{Binding Save}" />
-                <ProgressBar Margin="0 0 5 0" Value="{Binding CopyCompletionPercentage, Mode=OneWay}" Width="400" Visibility="{Binding CopyInProgress, Converter={x:Static local:CopyInProgressVisibilityConverter.Instance}}" />
-                <Button Content="x" Padding="5" Command="{Binding CancelCopy}" Visibility="{Binding CopyInProgress, Converter={x:Static local:CopyInProgressVisibilityConverter.Instance}}" />
+                <ProgressBar Margin="0 0 10 0" Value="{Binding CopyCompletionPercentage, Mode=OneWay}" Width="400" Visibility="{Binding CopyInProgress, Converter={x:Static local:BooleanVisibilityConverter.Instance}}" />
+                <Button Margin="0 0 10 0" Content="x" Padding="5" Command="{Binding CancelCopy}" Visibility="{Binding CopyInProgress, Converter={x:Static local:BooleanVisibilityConverter.Instance}}" />
+                <TextBlock Name="CleaningUpTextBlock" VerticalAlignment="Center" Style="{StaticResource animatedTextBlock}" Visibility="{Binding DeletingInCompleteDirectories, Converter={x:Static local:BooleanVisibilityConverter.Instance}}" />
+
             </StackPanel>
 
             <Grid Grid.Column="1" Grid.Row="1" Margin="20 10 20 10">

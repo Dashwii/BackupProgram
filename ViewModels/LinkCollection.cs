@@ -43,6 +43,7 @@ namespace BackupProgram.ViewModels
         }
 
         public int CopyCompletionPercentage { get; set; }
+        public bool DeletingInCompleteDirectories { get; set; } = false;
 
         private CancellationTokenSource _cancellationToken = new(); 
 
@@ -81,7 +82,8 @@ namespace BackupProgram.ViewModels
             Copy = new BaseCommand(CopyCommand, (_) => { return !CopyInProgress; },
                 this, nameof(CopyInProgress));
             Save = new BaseCommand(SaveCommand);
-            CancelCopy = new BaseCommand(CancelCopyCommand);
+            CancelCopy = new BaseCommand(CancelCopyCommand, (_) => { return !DeletingInCompleteDirectories; },
+                this, nameof(DeletingInCompleteDirectories));
             ToggleCurrentLinkIsEnabled = new BaseCommand(ToggleCurrentLinkIsEnabledCommand);
 
             foreach (var link in links)
@@ -213,8 +215,9 @@ namespace BackupProgram.ViewModels
             catch (Exception e)
             {
                 if (e is OperationCanceledException) 
-                { 
-                    MessageBox.Show("Copying cancelled."); 
+                {
+                    MessageBox.Show("Copying cancelled.");
+                    DeletingInCompleteDirectories = false;
                     cancelled = true;
                     ResetCancelCopyToken();
                 }
@@ -296,6 +299,7 @@ namespace BackupProgram.ViewModels
         private void CancelCopyInProgress()
         {
             _cancellationToken.Cancel();
+            DeletingInCompleteDirectories = true;
         }
 
         private void ResetCancelCopyToken()

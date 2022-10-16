@@ -20,6 +20,7 @@ namespace BackupProgram.Services
     {
         private int _totalFilesNeededCount = 0;
         private int _filesCopied = 0;
+        private List<string> _inProgressDirectories = new();
         public IProgress<CopyProgressModel> CopyProgressTracker;
         public CancellationToken CancellationToken { get; set; }
 
@@ -44,14 +45,17 @@ namespace BackupProgram.Services
                     copyTasks.Add(HandleCopyingAsync(link.FilePath, dest.FilePath));
                 }
             }
-
             try
             {
                 await Task.WhenAll(copyTasks);
             }
             catch (Exception e)
             {
-                if (e is OperationCanceledException) { throw; }
+                if (e is OperationCanceledException)
+                {
+                    await Task.Run(() => CleanupIncompleteDirectories());
+                    throw;
+                }
                 else { return; }
             }
         }
@@ -79,8 +83,41 @@ namespace BackupProgram.Services
             }
             catch (Exception e)
             {
-                if (e is OperationCanceledException) { throw; }
+                if (e is OperationCanceledException) 
+                {
+                    await Task.Run(() => CleanupIncompleteDirectories());
+                    throw;
+                }
                 else { return; }
+            }
+        }
+
+        private void CleanupIncompleteDirectories()
+        {
+            Action<string> hardDelete = null!;
+            hardDelete = new Action<string>(directory =>
+            {
+                string[] files = Directory.GetFiles(directory);
+                string[] dirs = Directory.GetDirectories(directory);
+
+                foreach (string file in files)
+                {
+                    // Set file attributes to normal due to some files denying permission when deleting. 
+                    File.SetAttributes(file, FileAttributes.Normal);
+                    File.Delete(file);
+                }
+                foreach (string dir in dirs)
+                {
+                    hardDelete(dir);
+                }
+                Directory.Delete(directory);
+            });
+
+
+            for (int i = _inProgressDirectories.Count - 1; i >= 0; i--)
+            {
+                hardDelete(_inProgressDirectories[i]);
+                _inProgressDirectories.RemoveAt(i);
             }
 
         }
@@ -91,7 +128,9 @@ namespace BackupProgram.Services
             {
                 // Create new folder for files to reside in. 
                 string copyFolder = await Task.Run(() => CreateCopyFolder(source, destination));
+                _inProgressDirectories.Add(copyFolder);
                 await Task.Run(() => CopyDirectory(source, copyFolder));
+                _inProgressDirectories.Remove(copyFolder);
             }
             catch (Exception e)
             {
