@@ -86,12 +86,20 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
-                
+
                 <ListBox Name="sourceListBox" Grid.Column="0" Grid.Row="0" Margin="0 0 5 0" ItemsSource="{Binding SourceLinks}" HorizontalContentAlignment="Stretch">
+                    
                     <ListBox.Resources>
+                        <ContextMenu x:Key="MyElementMenu">
+                            <MenuItem Header="Delete" />
+                        </ContextMenu>
                         <Style TargetType="{x:Type ListBox}">
                             <EventSetter Event="SelectionChanged" Handler="SourceListBox_SelectionChanged" />
                         </Style>
+                        <ContextMenu x:Key="listBoxContextMenu">
+                            <MenuItem Header="Copy" />
+                            <MenuItem Header="Delete" />
+                        </ContextMenu>
                     </ListBox.Resources>
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ListBoxItem}">
@@ -106,10 +114,13 @@
                                     <ColumnDefinition Width="auto"  />
                                     <ColumnDefinition Width="*"  />
                                     <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="auto" />
                                 </Grid.ColumnDefinitions>
                                 <Image RenderOptions.BitmapScalingMode="HighQuality" Grid.Column="0" Source="./images/folder.png" Width="30" Height="30" Margin="3" /> 
                                 <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" />
-                                <Button Grid.Column="2" Style="{StaticResource ToggleIsEnabledButtonStyle}"
+                                <Image Width="30" Height="30" Margin="3" RenderOptions.BitmapScalingMode="HighQuality" Grid.Column="2" VerticalAlignment="Center" Source="./images/auto.png" Visibility="{Binding IsAutoOnly, 
+                                    Converter={x:Static local:BooleanVisibilityConverter.Instance}}" />
+                                <Button Name="ToggleEnabled" Grid.Column="3" Style="{StaticResource ToggleIsEnabledButtonStyle}"
                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, 
                                                   AncestorType={x:Type UserControl}}, Path=DataContext.ToggleCurrentLinkIsEnabled}">
                                     <Image RenderOptions.BitmapScalingMode="HighQuality" Margin="3" Width="20" Height="20" Source="{Binding ImagePath}"/>

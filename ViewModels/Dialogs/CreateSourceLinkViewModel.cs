@@ -48,6 +48,12 @@ namespace BackupProgram.ViewModels.Dialogs
             get => SourceLink.IsEnabled;
             set => SourceLink.IsEnabled = value;
         }
+        
+        public bool IsAutoOnly
+        {
+            get => SourceLink.IsAutoOnly;
+            set => SourceLink.IsAutoOnly = value;
+        }
 
         public bool AutoCopyEnabled
         {

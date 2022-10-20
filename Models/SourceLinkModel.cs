@@ -13,6 +13,7 @@ namespace BackupProgram.Models
         public string FilePath { get; set; }
         public string Name => Path.GetFileName(FilePath);
         public bool IsEnabled { get; set; }
+        public bool IsAutoOnly { get; set; }
         public bool AutoCopyEnabled { get; set; }
         public bool AutoDeleteEnabled { get; set; }
         public List<DestLinkModel> DestLinks { get; set; }

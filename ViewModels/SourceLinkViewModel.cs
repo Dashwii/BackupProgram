@@ -34,6 +34,12 @@ namespace BackupProgram.ViewModels
             set => LinkModel.IsEnabled = value;
         }
 
+        public bool IsAutoOnly
+        {
+            get => LinkModel.IsAutoOnly;
+            set => LinkModel.IsAutoOnly = value;
+        }
+
         public bool AutoCopyEnabled
         {
             get => LinkModel.AutoCopyEnabled; 
@@ -58,6 +64,7 @@ namespace BackupProgram.ViewModels
             {
                 FilePath = linkModel.FilePath,
                 IsEnabled = linkModel.IsEnabled,
+                IsAutoOnly = linkModel.IsAutoOnly,
                 AutoCopyEnabled = linkModel.AutoCopyEnabled,
                 AutoDeleteEnabled = linkModel.AutoDeleteEnabled,
                 DestLinks = linkModel.DestLinks
@@ -93,7 +100,7 @@ namespace BackupProgram.ViewModels
         public string ReturnLinkInfo()
         {
             var d = FilePath.Replace("\\", "/");
-            return @$"\b Path: \b0 {d}, \b Is Enabled: \b0 {IsEnabled}, \b Auto Copy Enabled: \b0 {AutoCopyEnabled}, \b Auto Delete Enabled: \b0 {AutoDeleteEnabled}";
+            return @$"\b Path: \b0 {d}, \b Is Enabled: \b0 {IsEnabled}, \b Auto Only: \b0 {IsAutoOnly}, \b Auto Copy Enabled: \b0 {AutoCopyEnabled}, \b Auto Delete Enabled: \b0 {AutoDeleteEnabled}";
         }
     }
 }

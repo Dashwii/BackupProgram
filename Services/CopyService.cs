@@ -206,8 +206,7 @@ namespace BackupProgram.Services
         }
 
         private bool EligibleCopy(ILinkViewModel link)
-        {
-            
+        {  
             if (!Directory.Exists(link.FilePath))
             {
                 // TODO: Alert user.
@@ -218,6 +217,11 @@ namespace BackupProgram.Services
             {
                 var d = (DestLinkViewModel)link;
                 if (d.DestType != Models.TargetType.LOCAL) { return false; }
+            }
+            else
+            {
+                var d = (SourceLinkViewModel)link;
+                if (d.IsAutoOnly) { return false; }
             }
             return true;
         }
