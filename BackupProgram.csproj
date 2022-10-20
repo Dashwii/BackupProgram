@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Views\Images\auto.png" />
     <None Remove="Views\Images\checkmark.jpg" />
     <None Remove="Views\Images\checkmark.png" />
     <None Remove="Views\Images\drive.png" />
@@ -27,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Views\Images\auto.png" />
     <Resource Include="Views\Images\checkmark.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
