@@ -43,7 +43,10 @@ namespace BackupProgram.Views
 
         private void SourceListBoxItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            ViewModel.ShowAddLinkDialog.Execute(sender);
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                ViewModel.ShowAddLinkDialog.Execute(sender);
+            } 
         }
 
         private void SourceListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -58,7 +61,10 @@ namespace BackupProgram.Views
 
         private void DestinationListBoxItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            ViewModel.ShowAddDestLinkDialog.Execute(sender);
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                ViewModel.ShowAddDestLinkDialog.Execute(sender); 
+            }
         }
 
         private void DestinationListBoxItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
